@@ -5,7 +5,7 @@
 
   ## Live Demo
 
-  🌐 **Access the live site:** [GitHub Pages](https://[SEU-USUARIO].github.io/frontend-gestao-academica/)
+  🌐 **Access the live site:** [GitHub Pages](https://victor-pierobon.github.io/Sistema-de-Gest-o-Acad-mica---UnDF-SIGA--UnDF-/)
 
   ## Login Credentials
 
@@ -37,5 +37,5 @@
   2. Go to repository Settings > Pages
   3. Select "Deploy from a branch"
   4. Choose "main" branch and "/docs" folder
-  5. Your site will be available at: `https://[username].github.io/frontend-gestao-academica/`
+  5. Your site will be available at: `https://victor-pierobon.github.io/Sistema-de-Gest-o-Acad-mica---UnDF-SIGA--UnDF-/`
   
