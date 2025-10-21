@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
+import { useTheme } from '../../contexts/ThemeContext';
 import { 
   Users, 
   ClipboardList, 
@@ -19,7 +20,8 @@ interface ProfessorDashboardProps {
 }
 
 export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
-  // Dados mockados para demonstração
+  const { isDark } = useTheme();
+  
   const turmas = [
     { nome: 'Algoritmos Avançados - Turma A', alunos: 35, periodo: '2024.1' },
     { nome: 'Estruturas de Dados - Turma B', alunos: 28, periodo: '2024.1' },
@@ -48,58 +50,61 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cards de resumo */}
+      <div className="mb-6">
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
+        <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Dashboard do Professor</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Total de Turmas</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Total de Turmas</CardTitle>
             <BookOpen className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{turmas.length}</div>
-            <p className="text-xs text-slate-400">{totalAlunos} alunos total</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{turmas.length}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{totalAlunos} alunos total</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Solicitações Pendentes</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Solicitações Pendentes</CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{solicitacoesPendentes.length}</div>
-            <p className="text-xs text-slate-400">Aguardando avaliação</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{solicitacoesPendentes.length}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Aguardando avaliação</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Alunos em Risco</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Alunos em Risco</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{alunosRisco.length}</div>
-            <p className="text-xs text-slate-400">+20% de faltas</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{alunosRisco.length}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>+20% de faltas</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Aulas Hoje</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Aulas Hoje</CardTitle>
             <Calendar className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{proximasAulas.length}</div>
-            <p className="text-xs text-slate-400">Próximas aulas</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{proximasAulas.length}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Próximas aulas</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Alertas */}
       {alunosRisco.length > 0 && (
-        <Card className="bg-red-900/20 border-red-800">
+        <Card className={isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}>
           <CardHeader>
-            <CardTitle className="text-red-400 flex items-center">
+            <CardTitle className={`flex items-center ${isDark ? 'text-red-400' : 'text-red-700'}`}>
               <AlertTriangle className="h-5 w-5 mr-2" />
               Alunos em Risco de Reprovação por Falta
             </CardTitle>
@@ -109,8 +114,8 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
               {alunosRisco.map((aluno, index) => (
                 <div key={index} className="flex justify-between items-center">
                   <div>
-                    <p className="text-red-300">{aluno.nome}</p>
-                    <p className="text-red-400 text-sm">{aluno.disciplina}</p>
+                    <p className={isDark ? 'text-red-300' : 'text-red-700'}>{aluno.nome}</p>
+                    <p className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>{aluno.disciplina}</p>
                   </div>
                   <Badge variant="destructive">
                     {aluno.faltas} faltas ({aluno.percentual}%)
@@ -123,23 +128,22 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Minhas turmas */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Minhas Turmas</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Minhas Turmas</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Turmas sob sua responsabilidade
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {turmas.map((turma, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+              <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div>
-                  <h4 className="text-white text-sm">{turma.nome}</h4>
-                  <p className="text-slate-400 text-xs">{turma.periodo}</p>
+                  <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{turma.nome}</h4>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{turma.periodo}</p>
                 </div>
                 <div className="text-right">
-                  <Badge variant="secondary" className="bg-slate-600 text-slate-200">
+                  <Badge variant="secondary" className={isDark ? 'bg-slate-600 text-slate-200' : 'bg-slate-200 text-slate-700'}>
                     <Users className="h-3 w-3 mr-1" />
                     {turma.alunos}
                   </Badge>
@@ -149,23 +153,22 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
           </CardContent>
         </Card>
 
-        {/* Solicitações pendentes */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Solicitações Pendentes</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Solicitações Pendentes</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Aguardando sua avaliação
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {solicitacoesPendentes.map((solicitacao, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+              <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div>
-                  <h4 className="text-white text-sm">{solicitacao.aluno}</h4>
-                  <p className="text-slate-400 text-xs">{solicitacao.disciplina}</p>
+                  <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{solicitacao.aluno}</h4>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.disciplina}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-slate-400 text-xs">{solicitacao.data}</p>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.data}</p>
                   <Badge variant="outline" className="border-yellow-600 text-yellow-400 mt-1">
                     Pendente
                   </Badge>
@@ -176,36 +179,34 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
         </Card>
       </div>
 
-      {/* Próximas aulas */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
-          <CardTitle className="text-white">Próximas Aulas - Hoje</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Próximas Aulas - Hoje</CardTitle>
+          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
             Sua agenda do dia
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {proximasAulas.map((aula, index) => (
-              <div key={index} className="p-4 bg-slate-700 rounded-lg">
+              <div key={index} className={`p-4 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" className="border-slate-600 text-slate-300">
+                  <Badge variant="outline" className={isDark ? 'border-slate-600 text-slate-300' : 'border-slate-300 text-slate-700'}>
                     {aula.horario}
                   </Badge>
-                  <span className="text-slate-400 text-xs">{aula.sala}</span>
+                  <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{aula.sala}</span>
                 </div>
-                <h4 className="text-white text-sm">{aula.turma}</h4>
+                <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{aula.turma}</h4>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Ações rápidas */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
-          <CardTitle className="text-white">Ações Rápidas</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Ações Rápidas</CardTitle>
+          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
             Acesso rápido às principais funcionalidades
           </CardDescription>
         </CardHeader>
@@ -223,7 +224,7 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
             
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('avaliar-solicitacoes')}
             >
               <div className="flex flex-col items-center">
@@ -234,7 +235,7 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
             
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('turmas')}
             >
               <div className="flex flex-col items-center">
@@ -245,7 +246,7 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
 
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('grafo-turmas')}
             >
               <div className="flex flex-col items-center">

@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { Login } from './components/Login';
 import { Layout } from './components/Layout';
 import { AlunoDashboard } from './components/dashboards/AlunoDashboard';
 import { ProfessorDashboard } from './components/dashboards/ProfessorDashboard';
 import { SecretariaDashboard } from './components/dashboards/SecretariaDashboard';
+import { AdminDashboard } from './components/dashboards/AdminDashboard';
+import { StudentAnalysis } from './components/dashboards/StudentAnalysis';
+import { SubjectAnalysis } from './components/dashboards/SubjectAnalysis';
+import { OfferPlanning } from './components/dashboards/OfferPlanning';
 import { GrafoVisualizacao } from './components/GrafoVisualizacao';
 import { SolicitacaoRecuperacao } from './components/forms/SolicitacaoRecuperacao';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Toaster } from './components/ui/sonner';
 import { GrafoNode, GrafoEdge } from './types';
 
-// Dados mockados para demonstração dos grafos
 const mockNodes: GrafoNode[] = [
   { id: '1', label: 'Programação I', tipo: 'disciplina', status: 'cursada' },
   { id: '2', label: 'Algoritmos', tipo: 'disciplina', status: 'cursada' },
@@ -30,12 +34,13 @@ const mockEdges: GrafoEdge[] = [
 
 function AppContent() {
   const { isAuthenticated, user, loading } = useAuth();
+  const { isDark } = useTheme();
   const [currentPage, setCurrentPage] = useState('dashboard');
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white">Carregando...</div>
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
+        <div className={isDark ? 'text-white' : 'text-slate-900'}>Carregando...</div>
       </div>
     );
   }
@@ -53,23 +58,9 @@ function AppContent() {
       case 'secretaria':
         return <SecretariaDashboard onPageChange={setCurrentPage} />;
       case 'administrador':
-        return (
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white">Dashboard do Administrador</CardTitle>
-              <CardDescription className="text-slate-400">
-                Painel de controle administrativo
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-300">
-                Funcionalidades administrativas em desenvolvimento...
-              </p>
-            </CardContent>
-          </Card>
-        );
+        return <AdminDashboard />;
       default:
-        return <div className="text-white">Perfil não reconhecido</div>;
+        return <div className={isDark ? 'text-white' : 'text-slate-900'}>Perfil não reconhecido</div>;
     }
   };
 
@@ -80,6 +71,15 @@ function AppContent() {
       
       case 'solicitar-recuperacao':
         return <SolicitacaoRecuperacao />;
+      
+      case 'analise-alunos':
+        return <StudentAnalysis />;
+      
+      case 'analise-disciplinas':
+        return <SubjectAnalysis />;
+      
+      case 'planejamento-oferta':
+        return <OfferPlanning />;
       
       case 'grafo-historico':
       case 'grafo-turmas':
@@ -97,15 +97,15 @@ function AppContent() {
       
       case 'minhas-solicitacoes':
         return (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
             <CardHeader>
-              <CardTitle className="text-white">Minhas Solicitações</CardTitle>
-              <CardDescription className="text-slate-400">
+              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Minhas Solicitações</CardTitle>
+              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                 Acompanhe o status das suas solicitações de recuperação
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-300">
+              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 Lista de solicitações em desenvolvimento...
               </p>
             </CardContent>
@@ -114,15 +114,15 @@ function AppContent() {
       
       case 'presencas':
         return (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
             <CardHeader>
-              <CardTitle className="text-white">Registro de Presenças</CardTitle>
-              <CardDescription className="text-slate-400">
+              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Registro de Presenças</CardTitle>
+              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                 Registre a presença dos alunos nas suas turmas
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-300">
+              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 Sistema de registro de presenças em desenvolvimento...
               </p>
             </CardContent>
@@ -131,15 +131,15 @@ function AppContent() {
       
       case 'relatorios':
         return (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
             <CardHeader>
-              <CardTitle className="text-white">Relatórios</CardTitle>
-              <CardDescription className="text-slate-400">
+              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Relatórios</CardTitle>
+              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                 Gere relatórios acadêmicos em PDF
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-300">
+              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 Sistema de relatórios em desenvolvimento...
               </p>
             </CardContent>
@@ -148,15 +148,15 @@ function AppContent() {
       
       default:
         return (
-          <Card className="bg-slate-800 border-slate-700">
+          <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
             <CardHeader>
-              <CardTitle className="text-white">Página em Desenvolvimento</CardTitle>
-              <CardDescription className="text-slate-400">
+              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Página em Desenvolvimento</CardTitle>
+              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                 Esta funcionalidade está sendo implementada
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-300">
+              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 A página "{currentPage}" estará disponível em breve.
               </p>
             </CardContent>
@@ -174,15 +174,13 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <div className="dark">
+    <ThemeProvider>
+      <AuthProvider>
         <AppContent />
         <Toaster 
-          position="top-right" 
-          theme="dark"
-          className="dark"
+          position="top-right"
         />
-      </div>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

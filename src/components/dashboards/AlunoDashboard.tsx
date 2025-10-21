@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { useTheme } from '../../contexts/ThemeContext';
 import { 
   BookOpen, 
   Clock, 
@@ -18,7 +19,8 @@ interface AlunoDashboardProps {
 }
 
 export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
-  // Dados mockados para demonstração
+  const { isDark } = useTheme();
+  
   const statusSolicitacoes = {
     pendentes: 2,
     aprovadas: 1,
@@ -47,75 +49,78 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
 
   return (
     <div className="space-y-6">
-      {/* Cards de resumo */}
+      <div className="mb-6">
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
+        <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Dashboard do Aluno</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Solicitações Pendentes</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Solicitações Pendentes</CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{statusSolicitacoes.pendentes}</div>
-            <p className="text-xs text-slate-400">
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{statusSolicitacoes.pendentes}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {statusSolicitacoes.aprovadas} aprovadas, {statusSolicitacoes.rejeitadas} rejeitadas
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Percentual de Faltas</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Percentual de Faltas</CardTitle>
             <AlertTriangle className={`h-4 w-4 ${presencas.percentualFaltas > 20 ? 'text-red-500' : 'text-green-500'}`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{presencas.percentualFaltas}%</div>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{presencas.percentualFaltas}%</div>
             <Progress 
               value={presencas.percentualFaltas} 
               className="mt-2"
               color={presencas.percentualFaltas > 20 ? 'red' : 'green'}
             />
-            <p className="text-xs text-slate-400 mt-1">
+            <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {presencas.faltas} faltas em {presencas.total} aulas
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Disciplinas Cursando</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Disciplinas Cursando</CardTitle>
             <BookOpen className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{disciplinasAndamento.length}</div>
-            <p className="text-xs text-slate-400">
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{disciplinasAndamento.length}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               Média geral: {(disciplinasAndamento.reduce((acc, d) => acc + d.nota, 0) / disciplinasAndamento.length).toFixed(1)}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Próximas Aulas</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Próximas Aulas</CardTitle>
             <Calendar className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{proximasAulas.length}</div>
-            <p className="text-xs text-slate-400">Hoje</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{proximasAulas.length}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Hoje</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Alerta de faltas */}
       {presencas.percentualFaltas > 20 && (
-        <Card className="bg-red-900/20 border-red-800">
+        <Card className={isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}>
           <CardHeader>
-            <CardTitle className="text-red-400 flex items-center">
+            <CardTitle className={`flex items-center ${isDark ? 'text-red-400' : 'text-red-700'}`}>
               <AlertTriangle className="h-5 w-5 mr-2" />
               Atenção: Limite de Faltas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-red-300">
+            <p className={isDark ? 'text-red-300' : 'text-red-600'}>
               Você está próximo do limite de 25% de faltas. Mantenha-se atento à frequência nas aulas.
             </p>
           </CardContent>
@@ -123,11 +128,10 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Disciplinas em andamento */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Disciplinas em Andamento</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Disciplinas em Andamento</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Acompanhe seu progresso e frequência
             </CardDescription>
           </CardHeader>
@@ -137,12 +141,12 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
               return (
                 <div key={index} className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <h4 className="text-white text-sm">{disciplina.nome}</h4>
-                    <Badge variant="secondary" className="bg-slate-700 text-slate-300">
+                    <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{disciplina.nome}</h4>
+                    <Badge variant="secondary" className={isDark ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-700'}>
                       Nota: {disciplina.nota}
                     </Badge>
                   </div>
-                  <div className="flex justify-between text-xs text-slate-400">
+                  <div className={`flex justify-between text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                     <span>Faltas: {disciplina.faltas}/{disciplina.totalAulas}</span>
                     <span className={percentualFaltas > 20 ? 'text-red-400' : 'text-green-400'}>
                       {percentualFaltas.toFixed(1)}%
@@ -158,22 +162,21 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
           </CardContent>
         </Card>
 
-        {/* Próximas aulas */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Próximas Aulas - Hoje</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Próximas Aulas - Hoje</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Sua agenda do dia
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {proximasAulas.map((aula, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+              <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div>
-                  <h4 className="text-white text-sm">{aula.disciplina}</h4>
-                  <p className="text-slate-400 text-xs">{aula.sala}</p>
+                  <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{aula.disciplina}</h4>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{aula.sala}</p>
                 </div>
-                <Badge variant="outline" className="border-slate-600 text-slate-300">
+                <Badge variant="outline" className={isDark ? 'border-slate-600 text-slate-300' : 'border-slate-300 text-slate-700'}>
                   {aula.horario}
                 </Badge>
               </div>
@@ -182,11 +185,10 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
         </Card>
       </div>
 
-      {/* Ações rápidas */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
-          <CardTitle className="text-white">Ações Rápidas</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Ações Rápidas</CardTitle>
+          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
             Acesso rápido às principais funcionalidades
           </CardDescription>
         </CardHeader>
@@ -204,7 +206,7 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
             
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('grafo-historico')}
             >
               <div className="flex flex-col items-center">
@@ -215,7 +217,7 @@ export function AlunoDashboard({ onPageChange }: AlunoDashboardProps) {
             
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('minhas-solicitacoes')}
             >
               <div className="flex flex-col items-center">

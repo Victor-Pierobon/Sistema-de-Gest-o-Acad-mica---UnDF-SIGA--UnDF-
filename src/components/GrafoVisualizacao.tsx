@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useTheme } from '../contexts/ThemeContext';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -33,13 +34,13 @@ export function GrafoVisualizacao({
   onNodeClick,
   height = 600 
 }: GrafoVisualizacaoProps) {
+  const { isDark } = useTheme();
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<GrafoNode | null>(null);
   const [filtroAtivo, setFiltroAtivo] = useState<string>('todos');
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
 
-  // Simulação simples de posicionamento de nós
   const getNodePosition = (node: GrafoNode, index: number) => {
     const centerX = 400;
     const centerY = 300;
@@ -55,14 +56,14 @@ export function GrafoVisualizacao({
   const getNodeColor = (node: GrafoNode) => {
     if (node.tipo === 'disciplina') {
       switch (node.status) {
-        case 'cursada': return '#22c55e'; // verde
-        case 'em_andamento': return '#3b82f6'; // azul
-        case 'perdida': return '#ef4444'; // vermelho
-        case 'disponivel': return '#6b7280'; // cinza
+        case 'cursada': return '#22c55e';
+        case 'em_andamento': return '#3b82f6';
+        case 'perdida': return '#ef4444';
+        case 'disponivel': return '#6b7280';
         default: return '#6b7280';
       }
     }
-    return '#8b5cf6'; // roxo para outros tipos
+    return '#8b5cf6';
   };
 
   const handleNodeClick = (node: GrafoNode) => {
@@ -91,13 +92,13 @@ export function GrafoVisualizacao({
 
   return (
     <div className="space-y-4">
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
           <div className="flex justify-between items-start">
             <div>
-              <CardTitle className="text-white">{title}</CardTitle>
+              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>{title}</CardTitle>
               {description && (
-                <CardDescription className="text-slate-400">
+                <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                   {description}
                 </CardDescription>
               )}
@@ -105,10 +106,10 @@ export function GrafoVisualizacao({
             <div className="flex items-center space-x-2">
               {filtros.length > 0 && (
                 <Select value={filtroAtivo} onValueChange={setFiltroAtivo}>
-                  <SelectTrigger className="w-40 bg-slate-700 border-slate-600">
+                  <SelectTrigger className={`w-40 ${isDark ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}>
                     <SelectValue placeholder="Filtrar por..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
+                  <SelectContent className={isDark ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'}>
                     <SelectItem value="todos">Todos</SelectItem>
                     {filtros.map(filtro => (
                       <SelectItem key={filtro} value={filtro}>{filtro}</SelectItem>
@@ -121,14 +122,13 @@ export function GrafoVisualizacao({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Controles */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={handleZoomIn}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}
                 >
                   <ZoomIn className="h-4 w-4" />
                 </Button>
@@ -136,7 +136,7 @@ export function GrafoVisualizacao({
                   size="sm"
                   variant="outline"
                   onClick={handleZoomOut}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}
                 >
                   <ZoomOut className="h-4 w-4" />
                 </Button>
@@ -144,11 +144,11 @@ export function GrafoVisualizacao({
                   size="sm"
                   variant="outline"
                   onClick={handleReset}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}
                 >
                   <RotateCcw className="h-4 w-4" />
                 </Button>
-                <span className="text-slate-400 text-sm">
+                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                   Zoom: {(zoom * 100).toFixed(0)}%
                 </span>
               </div>
@@ -158,7 +158,7 @@ export function GrafoVisualizacao({
                   size="sm"
                   variant="outline"
                   onClick={exportSVG}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                  className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}
                 >
                   <Download className="h-4 w-4 mr-1" />
                   Exportar
@@ -166,28 +166,26 @@ export function GrafoVisualizacao({
               </div>
             </div>
 
-            {/* Legenda */}
-            <div className="flex flex-wrap gap-2 p-3 bg-slate-700 rounded-lg">
+            <div className={`flex flex-wrap gap-2 p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="text-slate-300 text-xs">Cursada</span>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Cursada</span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className="text-slate-300 text-xs">Em Andamento</span>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Em Andamento</span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className="text-slate-300 text-xs">Perdida</span>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Perdida</span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-                <span className="text-slate-300 text-xs">Disponível</span>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Disponível</span>
               </div>
             </div>
 
-            {/* SVG do grafo */}
-            <div className="border border-slate-600 rounded-lg bg-slate-900 overflow-hidden">
+            <div className={`border rounded-lg overflow-hidden ${isDark ? 'border-slate-600 bg-slate-900' : 'border-slate-300 bg-slate-50'}`}>
               <svg
                 ref={svgRef}
                 width="100%"
@@ -195,7 +193,6 @@ export function GrafoVisualizacao({
                 viewBox={`${-pan.x} ${-pan.y} ${800 / zoom} ${600 / zoom}`}
                 className="cursor-move"
               >
-                {/* Arestas */}
                 {edges.map((edge, index) => {
                   const sourceNode = nodes.find(n => n.id === edge.source);
                   const targetNode = nodes.find(n => n.id === edge.target);
@@ -211,14 +208,13 @@ export function GrafoVisualizacao({
                       y1={sourcePos.y}
                       x2={targetPos.x}
                       y2={targetPos.y}
-                      stroke="#475569"
+                      stroke={isDark ? "#475569" : "#94a3b8"}
                       strokeWidth="2"
                       opacity="0.6"
                     />
                   );
                 })}
 
-                {/* Nós */}
                 {nodes.map((node, index) => {
                   const position = getNodePosition(node, index);
                   const color = getNodeColor(node);
@@ -240,7 +236,7 @@ export function GrafoVisualizacao({
                         x={position.x}
                         y={position.y + 35}
                         textAnchor="middle"
-                        fill="#e2e8f0"
+                        fill={isDark ? "#e2e8f0" : "#475569"}
                         fontSize="12"
                         className="pointer-events-none"
                       >
@@ -252,11 +248,10 @@ export function GrafoVisualizacao({
               </svg>
             </div>
 
-            {/* Informações do nó selecionado */}
             {selectedNode && (
-              <Card className="bg-slate-700 border-slate-600">
+              <Card className={isDark ? 'bg-slate-700 border-slate-600' : 'bg-slate-100 border-slate-300'}>
                 <CardHeader>
-                  <CardTitle className="text-white text-base flex items-center">
+                  <CardTitle className={`text-base flex items-center ${isDark ? 'text-white' : 'text-slate-900'}`}>
                     <Info className="h-4 w-4 mr-2" />
                     {selectedNode.label}
                   </CardTitle>
@@ -264,14 +259,14 @@ export function GrafoVisualizacao({
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Tipo:</span>
-                      <Badge variant="secondary" className="bg-slate-600 text-slate-200">
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Tipo:</span>
+                      <Badge variant="secondary" className={isDark ? 'bg-slate-600 text-slate-200' : 'bg-slate-200 text-slate-700'}>
                         {selectedNode.tipo}
                       </Badge>
                     </div>
                     {selectedNode.status && (
                       <div className="flex justify-between">
-                        <span className="text-slate-400">Status:</span>
+                        <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Status:</span>
                         <Badge 
                           variant="outline" 
                           className={`${
@@ -286,8 +281,8 @@ export function GrafoVisualizacao({
                       </div>
                     )}
                     {selectedNode.dados && (
-                      <div className="text-slate-300 text-sm">
-                        <pre className="bg-slate-800 p-2 rounded text-xs overflow-auto">
+                      <div className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        <pre className={`p-2 rounded text-xs overflow-auto ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                           {JSON.stringify(selectedNode.dados, null, 2)}
                         </pre>
                       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { 
@@ -26,7 +27,9 @@ import {
   UserCheck,
   ClipboardList,
   Network,
-  UserCog
+  UserCog,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -37,6 +40,7 @@ interface LayoutProps {
 
 export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
   const { user, logout } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
 
   const getMenuItems = () => {
     const baseItems = [
@@ -47,7 +51,6 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
       case 'aluno':
         return [
           ...baseItems,
-          { id: 'historico', label: 'Histórico Acadêmico', icon: BookOpen },
           { id: 'grafo-historico', label: 'Grafo do Histórico', icon: Network },
           { id: 'solicitar-recuperacao', label: 'Solicitar Recuperação', icon: FileText },
           { id: 'minhas-solicitacoes', label: 'Minhas Solicitações', icon: ClipboardList }
@@ -74,10 +77,9 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
       case 'administrador':
         return [
           ...baseItems,
-          { id: 'gestao-usuarios', label: 'Gestão de Usuários', icon: UserCog },
-          { id: 'configuracoes', label: 'Configurações', icon: Settings },
-          { id: 'logs-auditoria', label: 'Logs de Auditoria', icon: FileText },
-          { id: 'analises-completas', label: 'Análises Completas', icon: Network }
+          { id: 'analise-alunos', label: 'Análise de Alunos', icon: UserCog },
+          { id: 'analise-disciplinas', label: 'Análise de Disciplinas', icon: Settings },
+          { id: 'planejamento-oferta', label: 'Planejamento de Oferta', icon: FileText }
         ];
       
       default:
@@ -89,16 +91,16 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-slate-900">
-        <Sidebar className="bg-slate-800 border-slate-700">
-          <SidebarHeader className="border-b border-slate-700 p-4">
+      <div className={`flex min-h-screen w-full ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
+        <Sidebar className={isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"}>
+          <SidebarHeader className={`p-4 ${isDark ? 'border-b border-slate-700' : 'border-b border-slate-200'}`}>
             <div className="flex items-center space-x-2">
               <div className="bg-blue-600 p-2 rounded">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-white font-medium">Sistema Acadêmico</h2>
-                <p className="text-slate-400 text-xs">Gestão de Matérias</p>
+                <h2 className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h2>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Sistema Integrado de Gestão Acadêmica</p>
               </div>
             </div>
           </SidebarHeader>
@@ -110,7 +112,7 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                   <SidebarMenuButton
                     onClick={() => onPageChange(item.id)}
                     isActive={currentPage === item.id}
-                    className="text-slate-300 hover:text-white hover:bg-slate-700 data-[active=true]:bg-blue-600 data-[active=true]:text-white"
+                    className={isDark ? "text-slate-300 hover:text-white hover:bg-slate-700 data-[active=true]:bg-blue-600 data-[active=true]:text-white" : "text-slate-700 hover:text-slate-900 hover:bg-slate-100 data-[active=true]:bg-blue-600 data-[active=true]:text-white"}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.label}</span>
@@ -120,7 +122,7 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-slate-700 p-4">
+          <SidebarFooter className={`p-4 ${isDark ? 'border-t border-slate-700' : 'border-t border-slate-200'}`}>
             <div className="flex items-center space-x-3 mb-3">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-blue-600 text-white text-xs">
@@ -128,35 +130,46 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-white text-sm truncate">{user?.nome}</p>
-                <p className="text-slate-400 text-xs capitalize">{user?.perfil}</p>
+                <p className={`text-sm truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{user?.nome}</p>
+                <p className={`text-xs capitalize ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{user?.perfil}</p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className="w-full border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sair
-            </Button>
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleTheme}
+                className={`w-full ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
+              >
+                {isDark ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                {isDark ? 'Tema Claro' : 'Tema Escuro'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={logout}
+                className={`w-full ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
+            </div>
           </SidebarFooter>
         </Sidebar>
 
         <main className="flex-1 flex flex-col">
-          <header className="bg-slate-800 border-b border-slate-700 p-4">
+          <header className={`p-4 ${isDark ? 'bg-slate-800 border-b border-slate-700' : 'bg-white border-b border-slate-200'}`}>
             <div className="flex items-center">
-              <SidebarTrigger className="text-slate-300 hover:text-white" />
+              <SidebarTrigger className={isDark ? "text-slate-300 hover:text-white" : "text-slate-700 hover:text-slate-900"} />
               <div className="ml-4">
-                <h1 className="text-white text-xl">
+                <h1 className={`text-xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {menuItems.find(item => item.id === currentPage)?.label || 'Dashboard'}
                 </h1>
               </div>
             </div>
           </header>
 
-          <div className="flex-1 p-6 bg-slate-900">
+          <div className={`flex-1 p-6 ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
             {children}
           </div>
         </main>

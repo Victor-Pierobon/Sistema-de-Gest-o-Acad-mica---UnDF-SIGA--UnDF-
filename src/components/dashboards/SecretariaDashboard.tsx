@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
+import { useTheme } from '../../contexts/ThemeContext';
 import { 
   ClipboardList, 
   BarChart3, 
@@ -22,7 +23,8 @@ interface SecretariaDashboardProps {
 }
 
 export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) {
-  // Dados mockados para demonstração
+  const { isDark } = useTheme();
+  
   const solicitacoes = {
     pendentes: 15,
     aprovadas_professor: 8,
@@ -68,81 +70,84 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
 
   return (
     <div className="space-y-6">
-      {/* Cards de resumo */}
+      <div className="mb-6">
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
+        <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Dashboard da Secretaria</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Solicitações Pendentes</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Solicitações Pendentes</CardTitle>
             <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{solicitacoes.pendentes}</div>
-            <p className="text-xs text-slate-400">
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{solicitacoes.pendentes}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {solicitacoes.aprovadas_professor} aguardando deferimento
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Total de Alunos</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Total de Alunos</CardTitle>
             <Users className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{metricas.totalAlunos.toLocaleString()}</div>
-            <p className="text-xs text-slate-400">{metricas.alunosRisco} em risco</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{metricas.totalAlunos.toLocaleString()}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{metricas.alunosRisco} em risco</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Taxa de Abandono</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Taxa de Abandono</CardTitle>
             <AlertTriangle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{metricas.taxaAbandono}%</div>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{metricas.taxaAbandono}%</div>
             <Progress value={metricas.taxaAbandono} className="mt-2" />
-            <p className="text-xs text-slate-400 mt-1">Últimos 6 meses</p>
+            <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Últimos 6 meses</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm text-slate-300">Disciplinas Problemáticas</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Disciplinas Problemáticas</CardTitle>
             <BarChart3 className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl text-white">{metricas.disciplinasProblematicas}</div>
-            <p className="text-xs text-slate-400">Alta taxa de reprovação</p>
+            <div className={`text-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>{metricas.disciplinasProblematicas}</div>
+            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Alta taxa de reprovação</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Estatísticas por curso */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
-          <CardTitle className="text-white">Estatísticas por Curso</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Estatísticas por Curso</CardTitle>
+          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
             Métricas consolidadas de cada curso
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {cursosStats.map((curso, index) => (
-              <div key={index} className="p-4 bg-slate-700 rounded-lg">
+              <div key={index} className={`p-4 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-white">{curso.nome}</h4>
-                  <Badge variant="secondary" className="bg-slate-600 text-slate-200">
+                  <h4 className={isDark ? 'text-white' : 'text-slate-900'}>{curso.nome}</h4>
+                  <Badge variant="secondary" className={isDark ? 'bg-slate-600 text-slate-200' : 'bg-slate-200 text-slate-700'}>
                     {curso.alunos} alunos
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-slate-400">Matérias Perdidas</p>
-                    <p className="text-white">{curso.materiasPerdidas}</p>
+                    <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Matérias Perdidas</p>
+                    <p className={isDark ? 'text-white' : 'text-slate-900'}>{curso.materiasPerdidas}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Taxa de Abandono</p>
+                    <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Taxa de Abandono</p>
                     <p className={`${curso.abandono > 10 ? 'text-red-400' : 'text-green-400'}`}>
                       {curso.abandono}%
                     </p>
@@ -155,23 +160,22 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Solicitações recentes */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Solicitações Recentes</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Solicitações Recentes</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Últimas solicitações de recuperação
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {solicitacoesRecentes.map((solicitacao, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+              <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div>
-                  <h4 className="text-white text-sm">{solicitacao.aluno}</h4>
-                  <p className="text-slate-400 text-xs">{solicitacao.disciplina}</p>
+                  <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{solicitacao.aluno}</h4>
+                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.disciplina}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-slate-400 text-xs mb-1">{solicitacao.data}</p>
+                  <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.data}</p>
                   {getStatusBadge(solicitacao.status)}
                 </div>
               </div>
@@ -179,11 +183,10 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
           </CardContent>
         </Card>
 
-        {/* Status das solicitações */}
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Status das Solicitações</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Status das Solicitações</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Distribuição por status
             </CardDescription>
           </CardHeader>
@@ -191,7 +194,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <Clock className="h-4 w-4 text-yellow-500 mr-2" />
-                <span className="text-slate-300">Pendentes</span>
+                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Pendentes</span>
               </div>
               <Badge variant="outline" className="border-yellow-600 text-yellow-400">
                 {solicitacoes.pendentes}
@@ -201,7 +204,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-blue-500 mr-2" />
-                <span className="text-slate-300">Aprovadas pelo Professor</span>
+                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Aprovadas pelo Professor</span>
               </div>
               <Badge variant="outline" className="border-blue-600 text-blue-400">
                 {solicitacoes.aprovadas_professor}
@@ -211,7 +214,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                <span className="text-slate-300">Deferidas</span>
+                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Deferidas</span>
               </div>
               <Badge variant="outline" className="border-green-600 text-green-400">
                 {solicitacoes.deferidas}
@@ -221,7 +224,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
             <div className="flex justify-between items-center">
               <div className="flex items-center">
                 <XCircle className="h-4 w-4 text-red-500 mr-2" />
-                <span className="text-slate-300">Indeferidas</span>
+                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Indeferidas</span>
               </div>
               <Badge variant="outline" className="border-red-600 text-red-400">
                 {solicitacoes.indeferidas}
@@ -231,11 +234,10 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
         </Card>
       </div>
 
-      {/* Ações rápidas */}
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
-          <CardTitle className="text-white">Ações Rápidas</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Ações Rápidas</CardTitle>
+          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
             Acesso rápido às principais funcionalidades
           </CardDescription>
         </CardHeader>
@@ -253,7 +255,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
             
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('relatorios')}
             >
               <div className="flex flex-col items-center">
@@ -264,7 +266,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
             
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('analises-grafo')}
             >
               <div className="flex flex-col items-center">
@@ -275,7 +277,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
 
             <Button 
               variant="outline"
-              className="h-16 border-slate-600 text-slate-300 hover:bg-slate-700"
+              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
               onClick={() => onPageChange('metricas')}
             >
               <div className="flex flex-col items-center">

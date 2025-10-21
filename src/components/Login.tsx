@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -8,6 +9,7 @@ import { Alert, AlertDescription } from './ui/alert';
 import { GraduationCap, Mail, Lock, AlertCircle } from 'lucide-react';
 
 export function Login() {
+  const { isDark } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -36,7 +38,7 @@ export function Login() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className={`min-h-screen flex items-center justify-center p-4 ${isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100'}`}>
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
@@ -44,53 +46,53 @@ export function Login() {
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl text-white">Sistema Acadêmico</h1>
-          <p className="text-slate-400">Gestão de Matérias Perdidas</p>
+          <h1 className={`text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
+          <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Sistema Integrado de Gestão Acadêmica</p>
         </div>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white">Entrar</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Entrar</CardTitle>
+            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               Use suas credenciais institucionais
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">E-mail institucional</Label>
+                <Label htmlFor="email" className={isDark ? 'text-slate-300' : 'text-slate-700'}>E-mail institucional</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu.email@faculdade.edu.br"
-                    className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                    className={`pl-10 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-500'}`}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-300">Senha</Label>
+                <Label htmlFor="password" className={isDark ? 'text-slate-300' : 'text-slate-700'}>Senha</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
                   <Input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                    className={`pl-10 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-500'}`}
                   />
                 </div>
               </div>
 
               {error && (
-                <Alert className="bg-red-900/20 border-red-800">
-                  <AlertCircle className="h-4 w-4 text-red-400" />
-                  <AlertDescription className="text-red-400">
+                <Alert className={isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}>
+                  <AlertCircle className={`h-4 w-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                  <AlertDescription className={isDark ? 'text-red-400' : 'text-red-600'}>
                     {error}
                   </AlertDescription>
                 </Alert>
@@ -107,19 +109,19 @@ export function Login() {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800 border-slate-700">
+        <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className="text-white text-sm">Credenciais para Demonstração</CardTitle>
+            <CardTitle className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Credenciais para Demonstração</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <p className="text-xs text-slate-400 mb-3">Senha para todos: 123456</p>
+            <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Senha para todos: 123456</p>
             {demoCredentials.map((cred, index) => (
               <div key={index} className="flex justify-between items-center text-xs">
-                <span className="text-slate-300">{cred.role}:</span>
+                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>{cred.role}:</span>
                 <button
                   type="button"
                   onClick={() => setEmail(cred.email)}
-                  className="text-blue-400 hover:text-blue-300 underline"
+                  className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}`}
                 >
                   {cred.email}
                 </button>

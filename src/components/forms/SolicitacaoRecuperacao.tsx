@@ -8,6 +8,7 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Alert, AlertDescription } from '../ui/alert';
 import { Progress } from '../ui/progress';
+import { useTheme } from '../../contexts/ThemeContext';
 import { 
   Upload, 
   FileText, 
@@ -28,6 +29,7 @@ interface FormData {
 }
 
 export function SolicitacaoRecuperacao() {
+  const { isDark } = useTheme();
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,12 +95,10 @@ export function SolicitacaoRecuperacao() {
     setUploadProgress(0);
 
     try {
-      // Simular upload de arquivos
       if (files.length > 0) {
         await simulateUpload();
       }
 
-      // Simular envio da solicitação
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       setSubmitSuccess(true);
@@ -112,11 +112,11 @@ export function SolicitacaoRecuperacao() {
 
   if (submitSuccess) {
     return (
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardContent className="flex flex-col items-center justify-center py-12">
           <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
-          <h2 className="text-2xl text-white mb-2">Solicitação Enviada!</h2>
-          <p className="text-slate-400 text-center mb-6 max-w-md">
+          <h2 className={`text-2xl mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>Solicitação Enviada!</h2>
+          <p className={`text-center mb-6 max-w-md ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             Sua solicitação de recuperação foi enviada com sucesso. 
             Você receberá uma notificação quando ela for avaliada pelo professor.
           </p>
@@ -130,25 +130,24 @@ export function SolicitacaoRecuperacao() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Card className="bg-slate-800 border-slate-700">
+      <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
-          <CardTitle className="text-white">Solicitar Recuperação de Matéria</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Solicitar Recuperação de Matéria</CardTitle>
+          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
             Preencha todos os campos obrigatórios e anexe a documentação necessária
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Informações da disciplina */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="disciplina" className="text-slate-300">
+              <Label htmlFor="disciplina" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 Disciplina *
               </Label>
               <Select onValueChange={(value) => setValue('disciplina', value)}>
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                <SelectTrigger className={isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'}>
                   <SelectValue placeholder="Selecione a disciplina" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
+                <SelectContent className={isDark ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'}>
                   {disciplinasDisponiveis.map(disciplina => (
                     <SelectItem key={disciplina} value={disciplina}>
                       {disciplina}
@@ -162,14 +161,14 @@ export function SolicitacaoRecuperacao() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="periodo" className="text-slate-300">
+              <Label htmlFor="periodo" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 Período *
               </Label>
               <Input
                 id="periodo"
                 {...register('periodo', { required: true })}
                 placeholder="Ex: 2023.2"
-                className="bg-slate-700 border-slate-600 text-white"
+                className={isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'}
               />
               {errors.periodo && (
                 <p className="text-red-400 text-sm">Este campo é obrigatório</p>
@@ -178,7 +177,7 @@ export function SolicitacaoRecuperacao() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="cargaHoraria" className="text-slate-300">
+            <Label htmlFor="cargaHoraria" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
               Carga Horária *
             </Label>
             <Input
@@ -186,23 +185,22 @@ export function SolicitacaoRecuperacao() {
               type="number"
               {...register('cargaHoraria', { required: true, min: 1 })}
               placeholder="Ex: 60"
-              className="bg-slate-700 border-slate-600 text-white"
+              className={isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'}
             />
             {errors.cargaHoraria && (
               <p className="text-red-400 text-sm">Informe uma carga horária válida</p>
             )}
           </div>
 
-          {/* Motivo */}
           <div className="space-y-2">
-            <Label htmlFor="motivo" className="text-slate-300">
+            <Label htmlFor="motivo" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
               Motivo da Perda *
             </Label>
             <Select onValueChange={(value) => setValue('motivo', value)}>
-              <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+              <SelectTrigger className={isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'}>
                 <SelectValue placeholder="Selecione o motivo" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-700 border-slate-600">
+              <SelectContent className={isDark ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'}>
                 {motivosComuns.map(motivo => (
                   <SelectItem key={motivo} value={motivo}>
                     {motivo}
@@ -215,16 +213,15 @@ export function SolicitacaoRecuperacao() {
             )}
           </div>
 
-          {/* Justificativa */}
           <div className="space-y-2">
-            <Label htmlFor="justificativa" className="text-slate-300">
+            <Label htmlFor="justificativa" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
               Justificativa Detalhada *
             </Label>
             <Textarea
               id="justificativa"
               {...register('justificativa', { required: true, minLength: 50 })}
               placeholder="Descreva detalhadamente os motivos que levaram à perda da matéria..."
-              className="bg-slate-700 border-slate-600 text-white min-h-[100px]"
+              className={`min-h-[100px] ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'}`}
             />
             {errors.justificativa && (
               <p className="text-red-400 text-sm">
@@ -233,15 +230,14 @@ export function SolicitacaoRecuperacao() {
             )}
           </div>
 
-          {/* Upload de documentos */}
           <div className="space-y-4">
-            <Label className="text-slate-300">Documentos Comprobatórios</Label>
-            <div className="border-2 border-dashed border-slate-600 rounded-lg p-6 text-center">
-              <Upload className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-              <p className="text-slate-400 mb-2">
+            <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>Documentos Comprobatórios</Label>
+            <div className={`border-2 border-dashed rounded-lg p-6 text-center ${isDark ? 'border-slate-600' : 'border-slate-300'}`}>
+              <Upload className={`h-8 w-8 mx-auto mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
+              <p className={`mb-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                 Arraste arquivos aqui ou clique para selecionar
               </p>
-              <p className="text-slate-500 text-sm mb-4">
+              <p className={`text-sm mb-4 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                 PDF ou imagens até 10MB cada
               </p>
               <input
@@ -256,24 +252,23 @@ export function SolicitacaoRecuperacao() {
                 type="button"
                 variant="outline"
                 onClick={() => document.getElementById('file-upload')?.click()}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}
               >
                 Selecionar Arquivos
               </Button>
             </div>
 
-            {/* Lista de arquivos */}
             {files.length > 0 && (
               <div className="space-y-2">
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-slate-700 rounded-lg"
+                    className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}
                   >
                     <div className="flex items-center">
-                      <FileText className="h-4 w-4 text-slate-400 mr-2" />
-                      <span className="text-slate-300 text-sm">{file.name}</span>
-                      <span className="text-slate-500 text-xs ml-2">
+                      <FileText className={`h-4 w-4 mr-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
+                      <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{file.name}</span>
+                      <span className={`text-xs ml-2 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                         ({(file.size / 1024 / 1024).toFixed(2)} MB)
                       </span>
                     </div>
@@ -282,7 +277,7 @@ export function SolicitacaoRecuperacao() {
                       size="sm"
                       variant="ghost"
                       onClick={() => removeFile(index)}
-                      className="text-slate-400 hover:text-red-400"
+                      className={`hover:text-red-400 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -292,21 +287,19 @@ export function SolicitacaoRecuperacao() {
             )}
           </div>
 
-          {/* Progress bar durante upload */}
           {isSubmitting && uploadProgress > 0 && uploadProgress < 100 && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">Enviando documentos...</span>
-                <span className="text-slate-400">{uploadProgress}%</span>
+                <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>Enviando documentos...</span>
+                <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{uploadProgress}%</span>
               </div>
               <Progress value={uploadProgress} className="h-2" />
             </div>
           )}
 
-          {/* Informações importantes */}
-          <Alert className="bg-blue-900/20 border-blue-800">
-            <AlertCircle className="h-4 w-4 text-blue-400" />
-            <AlertDescription className="text-blue-300">
+          <Alert className={isDark ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'}>
+            <AlertCircle className={`h-4 w-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+            <AlertDescription className={isDark ? 'text-blue-300' : 'text-blue-700'}>
               Sua solicitação será primeiro avaliada pelo professor da disciplina. 
               Após aprovação, será encaminhada para a secretaria para deferimento final.
             </AlertDescription>
@@ -314,12 +307,11 @@ export function SolicitacaoRecuperacao() {
         </CardContent>
       </Card>
 
-      {/* Botões de ação */}
       <div className="flex justify-end space-x-4">
         <Button
           type="button"
           variant="outline"
-          className="border-slate-600 text-slate-300 hover:bg-slate-700"
+          className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}
         >
           Cancelar
         </Button>
