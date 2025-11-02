@@ -8,19 +8,29 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
+  const [isDark, setIsDark] = useState(() => {
+    // Verifica localStorage primeiro
     const saved = localStorage.getItem('theme');
     if (saved) {
-      setIsDark(saved === 'dark');
+      return saved === 'dark';
     }
-  }, []);
+    // Se não houver preferência salva, verifica preferência do sistema
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    // Aplica ou remove a classe 'dark' no root
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    // Salva a preferência
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    setIsDark(!isDark);
   };
 
   return (
