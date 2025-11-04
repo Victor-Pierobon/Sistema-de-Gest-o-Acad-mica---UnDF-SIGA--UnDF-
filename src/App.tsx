@@ -5,13 +5,13 @@ import { Login } from './components/Login';
 import { Layout } from './components/Layout';
 import { AlunoDashboard } from './components/dashboards/AlunoDashboard';
 import { ProfessorDashboard } from './components/dashboards/ProfessorDashboard';
-import { SecretariaDashboard } from './components/dashboards/SecretariaDashboard';
-import { AdminDashboard } from './components/dashboards/AdminDashboard';
+import { AdminSecretariaDashboard } from './components/dashboards/AdminSecretariaDashboard';
 import { StudentAnalysis } from './components/dashboards/StudentAnalysis';
 import { SubjectAnalysis } from './components/dashboards/SubjectAnalysis';
 import { OfferPlanning } from './components/dashboards/OfferPlanning';
 import { GrafoVisualizacao } from './components/GrafoVisualizacao';
 import { GraphAnalysis } from './components/dashboards/GraphAnalysis';
+import { AdvancedGraphVisualization } from './components/AdvancedGraphVisualization';
 import { Relatorios } from './components/dashboards/Relatorios';
 import { SolicitacaoRecuperacao } from './components/forms/SolicitacaoRecuperacao';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
@@ -19,12 +19,12 @@ import { Toaster } from './components/ui/sonner';
 import { GrafoNode, GrafoEdge } from './types';
 
 const mockNodes: GrafoNode[] = [
-  { id: '1', label: 'Programação I', tipo: 'disciplina', status: 'cursada' },
-  { id: '2', label: 'Algoritmos', tipo: 'disciplina', status: 'cursada' },
-  { id: '3', label: 'Estruturas de Dados', tipo: 'disciplina', status: 'em_andamento' },
-  { id: '4', label: 'Banco de Dados', tipo: 'disciplina', status: 'perdida' },
-  { id: '5', label: 'Engenharia de Software', tipo: 'disciplina', status: 'disponivel' },
-  { id: '6', label: 'Redes', tipo: 'disciplina', status: 'disponivel' }
+  { id: '1', label: 'Programação I', tipo: 'disciplina', categoria: 'moderada', status: 'cursada', dados: { semestre: 1 } },
+  { id: '2', label: 'Algoritmos', tipo: 'disciplina', categoria: 'dificil', status: 'cursada', dados: { semestre: 1 } },
+  { id: '3', label: 'Estruturas de Dados', tipo: 'disciplina', categoria: 'dificil', status: 'em_andamento', dados: { semestre: 2 } },
+  { id: '4', label: 'Banco de Dados', tipo: 'disciplina', categoria: 'critica', status: 'perdida', dados: { semestre: 3 } },
+  { id: '5', label: 'Engenharia de Software', tipo: 'disciplina', categoria: 'moderada', status: 'disponivel', dados: { semestre: 4 } },
+  { id: '6', label: 'Redes', tipo: 'disciplina', categoria: 'dificil', status: 'disponivel', dados: { semestre: 4 } }
 ];
 
 const mockEdges: GrafoEdge[] = [
@@ -57,12 +57,10 @@ function AppContent() {
         return <AlunoDashboard onPageChange={setCurrentPage} />;
       case 'professor':
         return <ProfessorDashboard onPageChange={setCurrentPage} />;
-      case 'secretaria':
-        return <SecretariaDashboard onPageChange={setCurrentPage} />;
       case 'administrador':
-        return <AdminDashboard />;
+        return <AdminSecretariaDashboard onPageChange={setCurrentPage} />;
       default:
-        return <div className={isDark ? 'text-white' : 'text-slate-900'}>Perfil não reconhecido</div>;
+        return <AdminSecretariaDashboard onPageChange={setCurrentPage} />;
     }
   };
 
@@ -84,7 +82,10 @@ function AppContent() {
         return <OfferPlanning />;
       
       case 'analises-grafo':
-        return <GraphAnalysis onBack={() => setCurrentPage('dashboard')} />;
+        return <AdvancedGraphVisualization onBack={() => setCurrentPage('dashboard')} />;
+      
+      case 'graph-analysis':
+        return <AdvancedGraphVisualization onBack={() => setCurrentPage('dashboard')} />;
       
       case 'relatorios':
         return <Relatorios onBack={() => setCurrentPage('dashboard')} />;

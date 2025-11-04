@@ -96,4 +96,5 @@ INSERT INTO solicitacoes_recuperacao (aluno_id, disciplina_id, periodo_solicitad
 UPDATE usuarios SET email = 'aluno' WHERE nome = 'João Silva Santos';
 UPDATE usuarios SET email = 'professor' WHERE nome = 'Ana Costa';
 UPDATE usuarios SET email = 'secretaria' WHERE nome = 'Lucia Ferreira';
+-- Note: The 'secretaria' email now maps to 'administrador' profile in the application
 UPDATE usuarios SET email = 'admin' WHERE nome = 'Roberto Admin';

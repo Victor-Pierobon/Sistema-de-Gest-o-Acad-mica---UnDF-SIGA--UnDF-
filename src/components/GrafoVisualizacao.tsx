@@ -42,24 +42,23 @@ export function GrafoVisualizacao({
   const [pan, setPan] = useState({ x: 0, y: 0 });
 
   const getNodePosition = (node: GrafoNode, index: number) => {
-    const centerX = 400;
-    const centerY = 300;
-    const radius = 150;
-    const angle = (index * 2 * Math.PI) / nodes.length;
+    const semestre = node.dados?.semestre || 1;
+    const nodesInSemester = nodes.filter(n => n.dados?.semestre === semestre);
+    const indexInSemester = nodesInSemester.findIndex(n => n.id === node.id);
     
-    return {
-      x: centerX + Math.cos(angle) * radius,
-      y: centerY + Math.sin(angle) * radius
-    };
+    const x = 100 + (semestre - 1) * 150;
+    const y = 100 + indexInSemester * 80;
+    
+    return { x, y };
   };
 
   const getNodeColor = (node: GrafoNode) => {
     if (node.tipo === 'disciplina') {
-      switch (node.status) {
-        case 'cursada': return '#22c55e';
-        case 'em_andamento': return '#3b82f6';
-        case 'perdida': return '#ef4444';
-        case 'disponivel': return '#6b7280';
+      switch (node.categoria) {
+        case 'critica': return '#ef4444';
+        case 'dificil': return '#f97316';
+        case 'moderada': return '#eab308';
+        case 'facil': return '#22c55e';
         default: return '#6b7280';
       }
     }
@@ -169,19 +168,19 @@ export function GrafoVisualizacao({
             <div className={`flex flex-wrap gap-2 p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Cursada</span>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Fácil (&lt;20%)</span>
               </div>
               <div className="flex items-center space-x-1">
-                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Em Andamento</span>
+                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Moderada (20-30%)</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Difícil (30-50%)</span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Perdida</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Disponível</span>
+                <span className={`text-xs ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Crítica (&gt;50%)</span>
               </div>
             </div>
 
@@ -190,7 +189,7 @@ export function GrafoVisualizacao({
                 ref={svgRef}
                 width="100%"
                 height={height}
-                viewBox={`${-pan.x} ${-pan.y} ${800 / zoom} ${600 / zoom}`}
+                viewBox={`${-pan.x} ${-pan.y} ${1000 / zoom} ${800 / zoom}`}
                 className="cursor-move"
               >
                 {edges.map((edge, index) => {

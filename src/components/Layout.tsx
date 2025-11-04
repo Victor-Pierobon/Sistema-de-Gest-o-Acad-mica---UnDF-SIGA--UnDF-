@@ -65,18 +65,13 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
           { id: 'grafo-turmas', label: 'Análise de Turmas', icon: Network }
         ];
       
-      case 'secretaria':
+      case 'administrador':
         return [
           ...baseItems,
           { id: 'gestao-solicitacoes', label: 'Gestão de Solicitações', icon: ClipboardList },
           { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
           { id: 'analises-grafo', label: 'Análises em Grafo', icon: Network },
-          { id: 'metricas', label: 'Métricas Consolidadas', icon: BarChart3 }
-        ];
-      
-      case 'administrador':
-        return [
-          ...baseItems,
+          { id: 'metricas', label: 'Métricas Consolidadas', icon: BarChart3 },
           { id: 'analise-alunos', label: 'Análise de Alunos', icon: UserCog },
           { id: 'analise-disciplinas', label: 'Análise de Disciplinas', icon: Settings },
           { id: 'planejamento-oferta', label: 'Planejamento de Oferta', icon: FileText }

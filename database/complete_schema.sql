@@ -1,4 +1,4 @@
--- SIGA-UnDF Database Schema
+-- SIGA-UnDF Complete Database Schema
 -- Sistema Integrado de Gestão Acadêmica - Universidade de Brasília
 
 -- =============================================
@@ -15,7 +15,7 @@ CREATE TABLE usuarios (
     data_nascimento DATE,
     telefone VARCHAR(20),
     endereco TEXT,
-    perfil VARCHAR(20) NOT NULL CHECK (perfil IN ('aluno', 'professor', 'administrador')),
+    perfil VARCHAR(20) NOT NULL CHECK (perfil IN ('aluno', 'professor', 'secretaria', 'administrador')),
     ativo BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -113,13 +113,9 @@ CREATE TABLE turmas (
     codigo VARCHAR(20) NOT NULL,
     vagas INTEGER NOT NULL,
     vagas_ocupadas INTEGER DEFAULT 0,
-    horario JSONB, -- {dia_semana: int, hora_inicio: time, hora_fim: time, sala: string}
+    horario JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- =============================================
--- TABELAS DE RELACIONAMENTO ACADÊMICO
--- =============================================
 
 -- Matrículas dos alunos em turmas
 CREATE TABLE matriculas (
@@ -139,40 +135,9 @@ CREATE TABLE avaliacoes (
     nota_2 DECIMAL(4,2),
     nota_3 DECIMAL(4,2),
     nota_final DECIMAL(4,2),
-    frequencia INTEGER DEFAULT 0, -- percentual de presença
+    frequencia INTEGER DEFAULT 0,
     situacao VARCHAR(20) DEFAULT 'cursando' CHECK (situacao IN ('cursando', 'aprovado', 'reprovado_nota', 'reprovado_frequencia', 'trancado')),
     data_lancamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Controle de presença detalhado
-CREATE TABLE presencas (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    matricula_id UUID REFERENCES matriculas(id) ON DELETE CASCADE,
-    data_aula DATE NOT NULL,
-    presente BOOLEAN NOT NULL,
-    justificativa TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- =============================================
--- TABELAS DE SOLICITAÇÕES E PROCESSOS
--- =============================================
-
--- Solicitações de recuperação
-CREATE TABLE solicitacoes_recuperacao (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    aluno_id UUID REFERENCES alunos(id) ON DELETE CASCADE,
-    disciplina_id UUID REFERENCES disciplinas(id),
-    periodo_solicitado VARCHAR(10) NOT NULL,
-    motivo TEXT NOT NULL,
-    documentos JSONB, -- array de URLs/paths dos documentos
-    status VARCHAR(30) DEFAULT 'pendente' CHECK (status IN ('pendente', 'aprovada_professor', 'rejeitada_professor', 'deferida', 'indeferida')),
-    parecer_professor TEXT,
-    parecer_secretaria TEXT,
-    professor_avaliador_id UUID REFERENCES professores(id),
-    data_submissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_avaliacao_professor TIMESTAMP,
-    data_avaliacao_secretaria TIMESTAMP
 );
 
 -- Histórico acadêmico consolidado
@@ -188,36 +153,27 @@ CREATE TABLE historico_academico (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =============================================
--- TABELAS PARA ANÁLISE DE GRAFOS
--- =============================================
-
--- Nós do grafo (entidades principais)
-CREATE TABLE grafo_nodes (
+-- Solicitações de recuperação
+CREATE TABLE solicitacoes_recuperacao (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    entity_type VARCHAR(20) NOT NULL CHECK (entity_type IN ('aluno', 'disciplina', 'curso', 'professor', 'turma')),
-    entity_id UUID NOT NULL,
-    label VARCHAR(255) NOT NULL,
-    properties JSONB, -- propriedades específicas do nó
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Arestas do grafo (relacionamentos)
-CREATE TABLE grafo_edges (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    source_node_id UUID REFERENCES grafo_nodes(id) ON DELETE CASCADE,
-    target_node_id UUID REFERENCES grafo_nodes(id) ON DELETE CASCADE,
-    relationship_type VARCHAR(30) NOT NULL CHECK (relationship_type IN ('prerequisito', 'cursou', 'matriculado', 'reprovou', 'leciona', 'pertence')),
-    weight DECIMAL(5,2) DEFAULT 1.0,
-    properties JSONB, -- propriedades específicas da aresta
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    aluno_id UUID REFERENCES alunos(id) ON DELETE CASCADE,
+    disciplina_id UUID REFERENCES disciplinas(id),
+    periodo_solicitado VARCHAR(10) NOT NULL,
+    motivo TEXT NOT NULL,
+    documentos JSONB,
+    status VARCHAR(30) DEFAULT 'pendente' CHECK (status IN ('pendente', 'aprovada_professor', 'rejeitada_professor', 'deferida', 'indeferida')),
+    parecer_professor TEXT,
+    parecer_secretaria TEXT,
+    professor_avaliador_id UUID REFERENCES professores(id),
+    data_submissao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_avaliacao_professor TIMESTAMP,
+    data_avaliacao_secretaria TIMESTAMP
 );
 
 -- =============================================
 -- ÍNDICES PARA PERFORMANCE
 -- =============================================
 
--- Índices para consultas frequentes
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_usuarios_cpf ON usuarios(cpf);
 CREATE INDEX idx_alunos_matricula ON alunos(matricula);
@@ -229,10 +185,6 @@ CREATE INDEX idx_matriculas_turma ON matriculas(turma_id);
 CREATE INDEX idx_avaliacoes_matricula ON avaliacoes(matricula_id);
 CREATE INDEX idx_historico_aluno ON historico_academico(aluno_id);
 CREATE INDEX idx_prerequisitos_disciplina ON prerequisitos(disciplina_id);
-CREATE INDEX idx_grafo_nodes_entity ON grafo_nodes(entity_type, entity_id);
-CREATE INDEX idx_grafo_edges_source ON grafo_edges(source_node_id);
-CREATE INDEX idx_grafo_edges_target ON grafo_edges(target_node_id);
-CREATE INDEX idx_grafo_edges_type ON grafo_edges(relationship_type);
 
 -- =============================================
 -- TRIGGERS PARA MANUTENÇÃO AUTOMÁTICA

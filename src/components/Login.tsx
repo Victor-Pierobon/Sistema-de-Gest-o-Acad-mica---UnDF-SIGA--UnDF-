@@ -33,7 +33,6 @@ export function Login() {
   const demoCredentials = [
     { role: 'Aluno', email: 'aluno' },
     { role: 'Professor', email: 'professor' },
-    { role: 'Secretaria', email: 'secretaria' },
     { role: 'Administrador', email: 'admin' }
   ];
 
@@ -68,7 +67,7 @@ export function Login() {
                     type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="secretaria"
+                    placeholder="admin"
                     className={`pl-10 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-500'}`}
                   />
                 </div>
@@ -127,6 +126,19 @@ export function Login() {
                 </button>
               </div>
             ))}
+            <div className="flex justify-between items-center text-xs">
+              <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Administrador (antigo):</span>
+              <button
+                type="button"
+                onClick={() => setEmail('secretaria')}
+                className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}`}
+              >
+                secretaria
+              </button>
+            </div>
+            <p className={`text-xs mt-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+              ℹ️ Os perfis de Secretaria e Administrador foram unificados
+            </p>
           </CardContent>
         </Card>
       </div>

@@ -81,7 +81,7 @@ INSERT INTO usuarios (id, nome, email, senha_hash, cpf, perfil) VALUES
 ('750e8400-e29b-41d4-a716-446655440003', 'Pedro Oliveira', 'pedro.oliveira@unb.br', '$2b$10$hash3', '12345678903', 'aluno'),
 ('750e8400-e29b-41d4-a716-446655440004', 'Ana Costa', 'ana.costa@unb.br', '$2b$10$hash4', '12345678904', 'professor'),
 ('750e8400-e29b-41d4-a716-446655440005', 'Carlos Pereira', 'carlos.pereira@unb.br', '$2b$10$hash5', '12345678905', 'professor'),
-('750e8400-e29b-41d4-a716-446655440006', 'Lucia Ferreira', 'lucia.ferreira@unb.br', '$2b$10$hash6', '12345678906', 'secretaria'),
+('750e8400-e29b-41d4-a716-446655440006', 'Lucia Ferreira', 'lucia.ferreira@unb.br', '$2b$10$hash6', '12345678906', 'administrador'),
 ('750e8400-e29b-41d4-a716-446655440007', 'Roberto Admin', 'admin@unb.br', '$2b$10$hash7', '12345678907', 'administrador');
 
 -- Alunos

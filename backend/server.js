@@ -43,11 +43,13 @@ app.post('/api/login', async (req, res) => {
     
     if (result.rows.length > 0 && senha === '123456') {
       const user = result.rows[0];
+      // Mapear secretaria para administrador (perfis foram unificados)
+      const perfil = user.perfil === 'secretaria' ? 'administrador' : user.perfil;
       res.json({
         id: user.id,
         nome: user.nome,
         email: user.email,
-        perfil: user.perfil,
+        perfil: perfil,
         matricula: user.matricula
       });
     } else {
@@ -453,47 +455,119 @@ app.get('/api/admin-stats', async (req, res) => {
 // Dados para grafo
 app.get('/api/grafo/:tipo', async (req, res) => {
   const { tipo } = req.params;
+  const { aluno_id } = req.query;
   
   try {
     if (tipo === 'prerequisitos') {
       const [disciplinas, prerequisitos] = await Promise.all([
         pool.query(`
-          SELECT d.id, d.nome, d.codigo, 
-                 COALESCE(stats.taxa_reprovacao, 0) as taxa_reprovacao
+          SELECT d.id, d.nome, d.codigo, d.semestre_recomendado,
+                 COALESCE(stats.taxa_reprovacao, 0) as taxa_reprovacao,
+                 COALESCE(stats.total_cursaram, 0) as total_cursaram,
+                 COALESCE(stats.aprovados, 0) as aprovados
           FROM disciplinas d
           LEFT JOIN (
             SELECT 
               disciplina_id,
+              COUNT(*) as total_cursaram,
+              COUNT(CASE WHEN situacao = 'aprovado' THEN 1 END) as aprovados,
               ROUND((COUNT(CASE WHEN situacao LIKE 'reprovado%' THEN 1 END) * 100.0) / 
                     NULLIF(COUNT(*), 0), 2) as taxa_reprovacao
             FROM historico_academico 
             GROUP BY disciplina_id
           ) stats ON d.id = stats.disciplina_id
           WHERE d.ativa = true
+          ORDER BY d.semestre_recomendado, d.nome
         `),
         pool.query(`
-          SELECT p.disciplina_id as target, p.prerequisito_id as source
+          SELECT p.disciplina_id as target, p.prerequisito_id as source, p.tipo
           FROM prerequisitos p
         `)
       ]);
       
-      const nodes = disciplinas.rows.map(d => ({
-        id: d.id,
-        label: d.nome,
-        tipo: 'disciplina',
-        status: 'disponivel',
-        dados: {
-          codigo: d.codigo,
-          taxa_reprovacao: parseFloat(d.taxa_reprovacao)
-        }
-      }));
+      const nodes = disciplinas.rows.map(d => {
+        const taxaReprovacao = parseFloat(d.taxa_reprovacao);
+        let categoria = 'facil';
+        if (taxaReprovacao > 50) categoria = 'critica';
+        else if (taxaReprovacao > 30) categoria = 'dificil';
+        else if (taxaReprovacao > 15) categoria = 'moderada';
+        
+        return {
+          id: d.id,
+          label: d.nome,
+          tipo: 'disciplina',
+          categoria: categoria,
+          dados: {
+            codigo: d.codigo,
+            semestre: d.semestre_recomendado,
+            taxa_reprovacao: taxaReprovacao,
+            total_cursaram: parseInt(d.total_cursaram),
+            aprovados: parseInt(d.aprovados)
+          }
+        };
+      });
       
       const edges = prerequisitos.rows.map((p, index) => ({
         id: `e${index}`,
         source: p.source,
         target: p.target,
-        tipo: 'prerequisito',
-        peso: 1
+        tipo: p.tipo || 'prerequisito',
+        peso: p.tipo === 'obrigatorio' ? 2 : 1
+      }));
+      
+      res.json({ nodes, edges });
+    } else if (tipo === 'aluno' && aluno_id) {
+      const [alunoData, historico] = await Promise.all([
+        pool.query(`
+          SELECT u.nome, a.matricula, a.coeficiente_rendimento
+          FROM alunos a
+          JOIN usuarios u ON a.usuario_id = u.id
+          WHERE a.id = $1
+        `, [aluno_id]),
+        pool.query(`
+          SELECT ha.disciplina_id, d.nome, d.codigo, ha.situacao, ha.nota_final, ha.periodo_cursado
+          FROM historico_academico ha
+          JOIN disciplinas d ON ha.disciplina_id = d.id
+          WHERE ha.aluno_id = $1
+          ORDER BY ha.periodo_cursado
+        `, [aluno_id])
+      ]);
+      
+      if (alunoData.rows.length === 0) {
+        return res.status(404).json({ error: 'Aluno não encontrado' });
+      }
+      
+      const aluno = alunoData.rows[0];
+      const nodes = [{
+        id: aluno_id,
+        label: aluno.nome,
+        tipo: 'aluno',
+        dados: {
+          matricula: aluno.matricula,
+          cr: parseFloat(aluno.coeficiente_rendimento)
+        }
+      }];
+      
+      historico.rows.forEach(h => {
+        nodes.push({
+          id: h.disciplina_id,
+          label: h.nome,
+          tipo: 'disciplina',
+          status: h.situacao,
+          dados: {
+            codigo: h.codigo,
+            nota: parseFloat(h.nota_final),
+            periodo: h.periodo_cursado
+          }
+        });
+      });
+      
+      const edges = historico.rows.map((h, index) => ({
+        id: `e${index}`,
+        source: aluno_id,
+        target: h.disciplina_id,
+        tipo: h.situacao,
+        peso: h.situacao === 'aprovado' ? 2 : 1
       }));
       
       res.json({ nodes, edges });
@@ -505,7 +579,100 @@ app.get('/api/grafo/:tipo', async (req, res) => {
   }
 });
 
+// Endpoint para análise de centralidade
+app.get('/api/grafo/analise/centralidade', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      WITH disciplina_stats AS (
+        SELECT 
+          d.id,
+          d.nome,
+          d.codigo,
+          COUNT(DISTINCT p1.disciplina_id) as dependentes,
+          COUNT(DISTINCT p2.prerequisito_id) as prerequisitos,
+          COALESCE(ha_stats.taxa_reprovacao, 0) as taxa_reprovacao
+        FROM disciplinas d
+        LEFT JOIN prerequisitos p1 ON d.id = p1.prerequisito_id
+        LEFT JOIN prerequisitos p2 ON d.id = p2.disciplina_id
+        LEFT JOIN (
+          SELECT 
+            disciplina_id,
+            ROUND((COUNT(CASE WHEN situacao LIKE 'reprovado%' THEN 1 END) * 100.0) / 
+                  NULLIF(COUNT(*), 0), 2) as taxa_reprovacao
+          FROM historico_academico 
+          GROUP BY disciplina_id
+        ) ha_stats ON d.id = ha_stats.disciplina_id
+        WHERE d.ativa = true
+        GROUP BY d.id, d.nome, d.codigo, ha_stats.taxa_reprovacao
+      )
+      SELECT *,
+             (dependentes + prerequisitos) as centralidade_total,
+             CASE 
+               WHEN dependentes > 3 AND taxa_reprovacao > 40 THEN 'gargalo_critico'
+               WHEN dependentes > 2 AND taxa_reprovacao > 30 THEN 'gargalo_alto'
+               WHEN dependentes > 1 THEN 'importante'
+               ELSE 'normal'
+             END as classificacao
+      FROM disciplina_stats
+      ORDER BY centralidade_total DESC, taxa_reprovacao DESC
+    `);
+    
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint para recomendações de disciplinas
+app.get('/api/grafo/recomendacoes/:aluno_id', async (req, res) => {
+  const { aluno_id } = req.params;
+  
+  try {
+    const result = await pool.query(`
+      WITH aluno_cursadas AS (
+        SELECT disciplina_id
+        FROM historico_academico
+        WHERE aluno_id = $1 AND situacao = 'aprovado'
+      ),
+      disciplinas_disponiveis AS (
+        SELECT d.id, d.nome, d.codigo, d.semestre_recomendado,
+               COALESCE(stats.taxa_reprovacao, 0) as taxa_reprovacao
+        FROM disciplinas d
+        LEFT JOIN (
+          SELECT 
+            disciplina_id,
+            ROUND((COUNT(CASE WHEN situacao LIKE 'reprovado%' THEN 1 END) * 100.0) / 
+                  NULLIF(COUNT(*), 0), 2) as taxa_reprovacao
+          FROM historico_academico 
+          GROUP BY disciplina_id
+        ) stats ON d.id = stats.disciplina_id
+        WHERE d.ativa = true
+          AND d.id NOT IN (SELECT disciplina_id FROM aluno_cursadas)
+          AND NOT EXISTS (
+            SELECT 1 FROM prerequisitos p
+            WHERE p.disciplina_id = d.id
+              AND p.prerequisito_id NOT IN (SELECT disciplina_id FROM aluno_cursadas)
+          )
+      )
+      SELECT *,
+             CASE 
+               WHEN taxa_reprovacao < 20 THEN 'recomendada'
+               WHEN taxa_reprovacao < 40 THEN 'moderada'
+               ELSE 'dificil'
+             END as dificuldade
+      FROM disciplinas_disponiveis
+      ORDER BY semestre_recomendado, taxa_reprovacao
+    `, [aluno_id]);
+    
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
   console.log(`Teste: http://localhost:${PORT}/api/test`);
+  console.log(`Grafo: http://localhost:${PORT}/api/grafo/prerequisitos`);
+  console.log(`Análise: http://localhost:${PORT}/api/grafo/analise/centralidade`);
 });

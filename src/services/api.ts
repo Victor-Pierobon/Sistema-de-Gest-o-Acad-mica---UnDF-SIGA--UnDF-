@@ -4,14 +4,14 @@ export const mockDatabaseData = {
     // Usuários com emails simples para login fácil
     { id: '1', nome: 'João Silva Santos', email: 'aluno', perfil: 'aluno', matricula: '202110001' },
     { id: '2', nome: 'Ana Costa', email: 'professor', perfil: 'professor' },
-    { id: '3', nome: 'Secretaria Acadêmica', email: 'secretaria', perfil: 'secretaria' },
+    { id: '3', nome: 'Administrador Acadêmico', email: 'secretaria', perfil: 'administrador' },
     { id: '4', nome: 'Admin Geral', email: 'admin', perfil: 'administrador' },
     // Usuários do banco de dados
     { id: '750e8400-e29b-41d4-a716-446655440010', nome: 'João Silva Santos', email: 'joao.santos@unb.br', perfil: 'aluno', matricula: '202110001' },
     { id: '750e8400-e29b-41d4-a716-446655440011', nome: 'Maria Oliveira Pereira', email: 'maria.pereira@unb.br', perfil: 'aluno', matricula: '202110002' },
     { id: '750e8400-e29b-41d4-a716-446655440012', nome: 'Carlos Souza Lima', email: 'carlos.lima@unb.br', perfil: 'aluno', matricula: '202110003' },
     { id: '750e8400-e29b-41d4-a716-446655440004', nome: 'Ana Costa', email: 'ana.costa@unb.br', perfil: 'professor' },
-    { id: '750e8400-e29b-41d4-a716-446655440002', nome: 'Secretaria Acadêmica', email: 'secretaria@unb.br', perfil: 'secretaria' },
+    { id: '750e8400-e29b-41d4-a716-446655440002', nome: 'Administrador Acadêmico', email: 'secretaria@unb.br', perfil: 'administrador' },
     { id: '750e8400-e29b-41d4-a716-446655440001', nome: 'Admin Geral', email: 'admin@unb.br', perfil: 'administrador' }
   ],
 
@@ -57,7 +57,9 @@ export const apiService = {
       console.error('Erro no login:', error);
       // Fallback para dados mock se API não estiver disponível
       const user = mockDatabaseData.usuarios.find(u => u.email === email);
-      if (user && senha === '123456') return user;
+      if (user && senha === '123456') {
+        return user;
+      }
       return null;
     }
   },
@@ -129,7 +131,43 @@ export const apiService = {
     } catch (error) {
       console.error('Erro ao buscar dados do grafo:', error);
     }
-    return { nodes: [], edges: [] };
+    
+    // Fallback para dados mock
+    const { enhancedNodes, enhancedEdges } = await import('../data/enhancedGraphData');
+    return { 
+      nodes: enhancedNodes, 
+      edges: enhancedEdges 
+    };
+  },
+
+  async getCentralityData() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/grafo/analise/centralidade`);
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.error('Erro ao buscar análise de centralidade:', error);
+    }
+    
+    // Fallback para dados mock
+    const { mockCentralityData } = await import('../data/graphData');
+    return mockCentralityData;
+  },
+
+  async getStudentRecommendations(alunoId: string) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/grafo/recomendacoes/${alunoId}`);
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.error('Erro ao buscar recomendações:', error);
+    }
+    
+    // Fallback para dados mock
+    const { mockStudentRecommendations } = await import('../data/graphData');
+    return mockStudentRecommendations;
   },
 
   async getCursosStats() {

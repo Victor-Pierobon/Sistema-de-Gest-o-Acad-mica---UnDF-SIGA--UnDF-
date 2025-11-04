@@ -11,8 +11,8 @@ Sistema completo de gestão acadêmica com frontend React e banco de dados estru
 
 - **Aluno:** email: `aluno` / senha: `123456`
 - **Professor:** email: `professor` / senha: `123456`
-- **Secretaria:** email: `secretaria` / senha: `123456`
 - **Administrador:** email: `admin` / senha: `123456`
+- **Administrador (antigo secretaria):** email: `secretaria` / senha: `123456`
 
 ## 🚀 Como Iniciar o Sistema Completo
 
@@ -64,7 +64,7 @@ npm run dev
 
 ### 5. Verificar Funcionamento
 - Acesse http://localhost:5173
-- Faça login com `secretaria` / `123456`
+- Faça login com `admin` / senha `123456`
 - Verifique se os dashboards mostram dados reais do PostgreSQL
 
 ## 🐳 Serviços Disponíveis
@@ -114,8 +114,9 @@ curl http://localhost:3002/api/test
 ## 📊 Funcionalidades Implementadas
 
 ### Dashboards com Dados Reais
-- **Secretaria Dashboard**: Métricas de alunos, solicitações, alertas (dados do PostgreSQL)
-- **Administrator Dashboard**: Análises administrativas, estatísticas de cursos (dados do PostgreSQL)
+- **Dashboard Administrativo**: Gestão completa do sistema acadêmico
+  - **Aba Gestão Acadêmica**: Métricas de alunos, solicitações, alertas (dados do PostgreSQL)
+  - **Aba Análises Estatísticas**: Estatísticas de cursos, gráficos, relatórios (dados do PostgreSQL)
 - **Student Dashboard**: Dados simulados (como solicitado)
 - **Professor Dashboard**: Dados simulados (como solicitado)
 
@@ -203,7 +204,7 @@ psql -h localhost -U siga_user -d siga_undf -f additional_data.sql
 
 ## 📝 Notas Importantes
 
-1. **Dados Reais**: Secretaria e Administrator dashboards usam dados do PostgreSQL
+1. **Dados Reais**: Dashboard Administrativo usa dados do PostgreSQL
 2. **Fallback**: Sistema tem dados de fallback para evitar telas em branco
 3. **Performance**: API otimizada com consultas eficientes
 4. **Escalabilidade**: Suporta milhares de alunos e disciplinas
@@ -216,7 +217,7 @@ psql -h localhost -U siga_user -d siga_undf -f additional_data.sql
 - ✅ **Frontend React**: Completo com 4 dashboards
 - ✅ **Backend Node.js**: API completa com 8+ endpoints
 - ✅ **PostgreSQL**: Schema completo com dados realistas
-- ✅ **Integração**: Dashboards Secretaria/Admin com dados reais
+- ✅ **Integração**: Dashboard Administrativo com dados reais
 - ✅ **Docker**: Ambiente completo containerizado
 - ✅ **Fallbacks**: Sistema robusto contra falhas
 - 🔄 **Neo4j**: Preparado para análises de grafo
