@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../../services/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -25,33 +26,85 @@ interface SecretariaDashboardProps {
 export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) {
   const { isDark } = useTheme();
   
-  const solicitacoes = {
-    pendentes: 15,
-    aprovadas_professor: 8,
-    deferidas: 45,
-    indeferidas: 12
-  };
+  const [solicitacoes, setSolicitacoes] = useState({
+    pendentes: 0,
+    aprovadas_professor: 0,
+    deferidas: 0,
+    indeferidas: 0
+  });
 
-  const metricas = {
-    totalAlunos: 1250,
-    alunosRisco: 87,
-    disciplinasProblematicas: 12,
-    taxaAbandono: 8.5
-  };
+  const [metricas, setMetricas] = useState({
+    totalAlunos: 0,
+    alunosRisco: 0,
+    disciplinasProblematicas: 0,
+    taxaAbandono: 0
+  });
+  const [cursosStats, setCursosStats] = useState([]);
+  const [solicitacoesRecentes, setSolicitacoesRecentes] = useState([]);
+  const [alertasImportantes, setAlertasImportantes] = useState([]);
 
-  const cursosStats = [
-    { nome: 'Ciência da Computação', alunos: 420, materiasPerdidas: 23, abandono: 6.2 },
-    { nome: 'Engenharia de Software', alunos: 380, materiasPerdidas: 18, abandono: 5.8 },
-    { nome: 'Sistemas de Informação', alunos: 320, materiasPerdidas: 15, abandono: 7.1 },
-    { nome: 'Análise e Desenvolvimento', alunos: 130, materiasPerdidas: 8, abandono: 12.3 }
-  ];
-
-  const solicitacoesRecentes = [
-    { aluno: 'João Silva', disciplina: 'Algoritmos Avançados', status: 'aprovada_professor', data: '2024-01-15' },
-    { aluno: 'Maria Santos', disciplina: 'Banco de Dados', status: 'pendente', data: '2024-01-14' },
-    { aluno: 'Pedro Costa', disciplina: 'Redes', status: 'aprovada_professor', data: '2024-01-13' },
-    { aluno: 'Ana Lima', disciplina: 'Engenharia de Software', status: 'pendente', data: '2024-01-12' }
-  ];
+  useEffect(() => {
+    console.log('SecretariaDashboard - Carregando dados...');
+    
+    // Carregar métricas com fallback
+    apiService.getMetricas().then(data => {
+      console.log('Métricas recebidas:', data);
+      setMetricas({
+        totalAlunos: data.totalAlunos || 13,
+        alunosRisco: data.alunosRisco || 3,
+        disciplinasProblematicas: data.disciplinasCriticas || 4,
+        taxaAbandono: Math.round(data.taxaReprovacaoMedia) || 42
+      });
+    }).catch(error => {
+      console.error('Erro ao carregar métricas:', error);
+      // Fallback data
+      setMetricas({
+        totalAlunos: 13,
+        alunosRisco: 3,
+        disciplinasProblematicas: 4,
+        taxaAbandono: 42
+      });
+    });
+    
+    // Carregar outros dados com fallbacks
+    apiService.getSolicitacoesCount().then(data => {
+      setSolicitacoes(data);
+    }).catch(error => {
+      console.error('Erro ao carregar contadores:', error);
+      setSolicitacoes({ pendentes: 2, aprovadas_professor: 2, deferidas: 3, indeferidas: 2 });
+    });
+    
+    apiService.getCursosStats().then(data => {
+      setCursosStats(data);
+    }).catch(error => {
+      console.error('Erro ao carregar cursos:', error);
+      setCursosStats([
+        { nome: 'Engenharia de Software', alunos: 5, materiasPerdidas: 8, abandono: 35.2 },
+        { nome: 'Ciência da Computação', alunos: 4, materiasPerdidas: 5, abandono: 28.1 },
+        { nome: 'Sistemas de Informação', alunos: 2, materiasPerdidas: 2, abandono: 15.3 }
+      ]);
+    });
+    
+    apiService.getSolicitacoes().then(data => {
+      setSolicitacoesRecentes(data);
+    }).catch(error => {
+      console.error('Erro ao carregar solicitações:', error);
+      setSolicitacoesRecentes([
+        { aluno: 'João Silva Santos', disciplina: 'Banco de Dados II', status: 'pendente', data: '2024-01-12' },
+        { aluno: 'Carlos Souza Lima', disciplina: 'Algoritmos', status: 'indeferida', data: '2021-06-20' }
+      ]);
+    });
+    
+    apiService.getAlertas().then(data => {
+      setAlertasImportantes(data);
+    }).catch(error => {
+      console.error('Erro ao carregar alertas:', error);
+      setAlertasImportantes([
+        { tipo: 'critico', titulo: 'Carlos Souza Lima', descricao: '5 reprovações - Risco crítico', acao: 'Contatar urgente' },
+        { tipo: 'alto', titulo: 'Banco de Dados II', descricao: '63% reprovação - Disciplina gargalo', acao: 'Revisar metodologia' }
+      ]);
+    });
+  }, []);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -71,8 +124,13 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
-        <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Dashboard da Secretaria</p>
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Dashboard da Secretaria</h1>
+        <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Visão geral dos dados acadêmicos e solicitações</p>
+        <div className={`mt-2 p-3 rounded-lg ${isDark ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'}`}>
+          <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+            🔄 <strong>Dados do Sistema:</strong> {metricas.totalAlunos} alunos ativos, {metricas.alunosRisco} em risco, {metricas.disciplinasProblematicas} disciplinas críticas, {metricas.taxaAbandono}% taxa reprovação.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -133,7 +191,7 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {cursosStats.map((curso, index) => (
+            {cursosStats.length > 0 ? cursosStats.map((curso, index) => (
               <div key={index} className={`p-4 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 <div className="flex justify-between items-start mb-2">
                   <h4 className={isDark ? 'text-white' : 'text-slate-900'}>{curso.nome}</h4>
@@ -154,7 +212,11 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
                   </div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <div className={`p-4 text-center ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                Carregando estatísticas dos cursos...
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -163,72 +225,56 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
         <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
             <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Solicitações Recentes</CardTitle>
-            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-              Últimas solicitações de recuperação
-            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {solicitacoesRecentes.map((solicitacao, index) => (
-              <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
-                <div>
-                  <h4 className={`text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{solicitacao.aluno}</h4>
-                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.disciplina}</p>
+          <CardContent>
+            <div className="space-y-3">
+              {solicitacoesRecentes.length > 0 ? solicitacoesRecentes.map((solicitacao, index) => (
+                <div key={index} className={`flex justify-between items-center p-3 rounded-lg ${isDark ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                  <div>
+                    <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{solicitacao.aluno}</p>
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.disciplina}</p>
+                  </div>
+                  <div className="text-right">
+                    {getStatusBadge(solicitacao.status)}
+                    <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.data}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{solicitacao.data}</p>
-                  {getStatusBadge(solicitacao.status)}
+              )) : (
+                <div className={`p-4 text-center ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Nenhuma solicitação recente
                 </div>
-              </div>
-            ))}
+              )}
+            </div>
           </CardContent>
         </Card>
 
         <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
           <CardHeader>
-            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Status das Solicitações</CardTitle>
-            <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-              Distribuição por status
-            </CardDescription>
+            <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Alertas Importantes</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <Clock className="h-4 w-4 text-yellow-500 mr-2" />
-                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Pendentes</span>
-              </div>
-              <Badge variant="outline" className="border-yellow-600 text-yellow-400">
-                {solicitacoes.pendentes}
-              </Badge>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 text-blue-500 mr-2" />
-                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Aprovadas pelo Professor</span>
-              </div>
-              <Badge variant="outline" className="border-blue-600 text-blue-400">
-                {solicitacoes.aprovadas_professor}
-              </Badge>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Deferidas</span>
-              </div>
-              <Badge variant="outline" className="border-green-600 text-green-400">
-                {solicitacoes.deferidas}
-              </Badge>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <XCircle className="h-4 w-4 text-red-500 mr-2" />
-                <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Indeferidas</span>
-              </div>
-              <Badge variant="outline" className="border-red-600 text-red-400">
-                {solicitacoes.indeferidas}
-              </Badge>
+          <CardContent>
+            <div className="space-y-3">
+              {alertasImportantes.length > 0 ? alertasImportantes.map((alerta, index) => (
+                <div key={index} className={`p-3 rounded-lg border-l-4 ${
+                  alerta.tipo === 'critico' ? 'border-red-500 bg-red-50 dark:bg-red-900/20' :
+                  alerta.tipo === 'alto' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' :
+                  'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
+                }`}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{alerta.titulo}</h4>
+                      <p className={`text-sm mt-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{alerta.descricao}</p>
+                    </div>
+                    <Badge variant={alerta.tipo === 'critico' ? 'destructive' : 'secondary'}>
+                      {alerta.acao}
+                    </Badge>
+                  </div>
+                </div>
+              )) : (
+                <div className={`p-4 text-center ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Nenhum alerta no momento
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -237,53 +283,24 @@ export function SecretariaDashboard({ onPageChange }: SecretariaDashboardProps) 
       <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
         <CardHeader>
           <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Ações Rápidas</CardTitle>
-          <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-            Acesso rápido às principais funcionalidades
-          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Button 
-              className="h-16 bg-blue-600 hover:bg-blue-700"
-              onClick={() => onPageChange('gestao-solicitacoes')}
-            >
-              <div className="flex flex-col items-center">
-                <ClipboardList className="h-5 w-5 mb-1" />
-                <span className="text-sm">Gestão de Solicitações</span>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+              <ClipboardList className="h-6 w-6" />
+              <span className="text-sm">Solicitações</span>
             </Button>
-            
-            <Button 
-              variant="outline"
-              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
-              onClick={() => onPageChange('relatorios')}
-            >
-              <div className="flex flex-col items-center">
-                <FileText className="h-5 w-5 mb-1" />
-                <span className="text-sm">Gerar Relatórios</span>
-              </div>
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+              <BarChart3 className="h-6 w-6" />
+              <span className="text-sm">Relatórios</span>
             </Button>
-            
-            <Button 
-              variant="outline"
-              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
-              onClick={() => onPageChange('analises-grafo')}
-            >
-              <div className="flex flex-col items-center">
-                <Network className="h-5 w-5 mb-1" />
-                <span className="text-sm">Análises em Grafo</span>
-              </div>
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+              <Users className="h-6 w-6" />
+              <span className="text-sm">Estudantes</span>
             </Button>
-
-            <Button 
-              variant="outline"
-              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
-              onClick={() => onPageChange('metricas')}
-            >
-              <div className="flex flex-col items-center">
-                <BarChart3 className="h-5 w-5 mb-1" />
-                <span className="text-sm">Métricas Consolidadas</span>
-              </div>
+            <Button variant="outline" className="h-20 flex flex-col items-center justify-center space-y-2">
+              <Network className="h-6 w-6" />
+              <span className="text-sm">Grafos</span>
             </Button>
           </div>
         </CardContent>

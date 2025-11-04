@@ -11,6 +11,8 @@ import { StudentAnalysis } from './components/dashboards/StudentAnalysis';
 import { SubjectAnalysis } from './components/dashboards/SubjectAnalysis';
 import { OfferPlanning } from './components/dashboards/OfferPlanning';
 import { GrafoVisualizacao } from './components/GrafoVisualizacao';
+import { GraphAnalysis } from './components/dashboards/GraphAnalysis';
+import { Relatorios } from './components/dashboards/Relatorios';
 import { SolicitacaoRecuperacao } from './components/forms/SolicitacaoRecuperacao';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Toaster } from './components/ui/sonner';
@@ -81,9 +83,14 @@ function AppContent() {
       case 'planejamento-oferta':
         return <OfferPlanning />;
       
+      case 'analises-grafo':
+        return <GraphAnalysis onBack={() => setCurrentPage('dashboard')} />;
+      
+      case 'relatorios':
+        return <Relatorios onBack={() => setCurrentPage('dashboard')} />;
+      
       case 'grafo-historico':
       case 'grafo-turmas':
-      case 'analises-grafo':
         return (
           <GrafoVisualizacao
             nodes={mockNodes}

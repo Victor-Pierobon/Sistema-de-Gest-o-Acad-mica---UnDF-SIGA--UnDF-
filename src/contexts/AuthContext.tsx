@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
+import { apiService } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -10,36 +11,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Dados mockados para demonstração
-const mockUsers: User[] = [
-  {
-    id: '1',
-    nome: 'João Silva',
-    email: 'joao.silva@faculdade.edu.br',
-    perfil: 'aluno',
-    curso: 'Ciência da Computação',
-    matricula: '2021001'
-  },
-  {
-    id: '2',
-    nome: 'Prof. Maria Santos',
-    email: 'maria.santos@faculdade.edu.br',
-    perfil: 'professor'
-  },
-  {
-    id: '3',
-    nome: 'Ana Coordenadora',
-    email: 'ana.coord@faculdade.edu.br',
-    perfil: 'secretaria'
-  },
-  {
-    id: '4',
-    nome: 'Admin Sistema',
-    email: 'admin@faculdade.edu.br',
-    perfil: 'administrador'
-  }
-];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -55,19 +26,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    console.log('AuthContext - Iniciando login:', email);
     setLoading(true);
     
-    // Simulação de autenticação
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser && password === '123456') {
-      setUser(foundUser);
-      localStorage.setItem('user', JSON.stringify(foundUser));
-      setLoading(false);
-      return true;
+    try {
+      const foundUser = await apiService.login(email, password);
+      console.log('AuthContext - Resposta do apiService:', foundUser);
+      
+      if (foundUser) {
+        const user: User = {
+          id: foundUser.id,
+          nome: foundUser.nome,
+          email: foundUser.email,
+          perfil: foundUser.perfil as UserRole,
+          matricula: foundUser.matricula
+        };
+        
+        console.log('AuthContext - Usuário criado:', user);
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        setLoading(false);
+        return true;
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
     }
     
+    console.log('AuthContext - Login falhou');
     setLoading(false);
     return false;
   };

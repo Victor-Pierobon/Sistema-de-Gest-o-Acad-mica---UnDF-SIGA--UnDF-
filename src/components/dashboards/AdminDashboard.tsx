@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import { apiService } from '../../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { Users, TrendingUp, AlertTriangle, GraduationCap } from "lucide-react";
@@ -5,76 +7,50 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 const COLORS = ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
 
-const mockKPIs = {
-  totalStudentsWithFailures: 1247,
-  subjectWithHighestFailureRate: "Banco de Dados II",
-  studentsAtRisk: 23.4,
-  criticalSubjects: 8
-};
-
-const mockSubjects = [
-  { id: "1", name: "Banco de Dados I", code: "BDI301", workload: 80, failureRate: 42.5, failedStudents: 156, prerequisites: [], semester: 3 },
-  { id: "2", name: "Banco de Dados II", code: "BDII401", workload: 80, failureRate: 48.3, failedStudents: 142, prerequisites: ["Banco de Dados I"], semester: 4 },
-  { id: "17", name: "PI V", code: "PI501", workload: 80, failureRate: 45.6, failedStudents: 134, prerequisites: ["PI IV"], semester: 5 },
-  { id: "18", name: "Segurança e Auditoria de Sistemas", code: "SAS501", workload: 60, failureRate: 44.1, failedStudents: 128, prerequisites: ["Banco de Dados I"], semester: 5 },
-  { id: "16", name: "PI IV", code: "PI401", workload: 80, failureRate: 40.2, failedStudents: 118, prerequisites: ["PI III"], semester: 4 },
-  { id: "12", name: "Engenharia de Usabilidade", code: "EU401", workload: 60, failureRate: 38.4, failedStudents: 112, prerequisites: [], semester: 4 },
-  { id: "15", name: "PI III", code: "PI301", workload: 80, failureRate: 36.8, failedStudents: 108, prerequisites: ["PI II"], semester: 3 },
-  { id: "9", name: "APE III", code: "APE301", workload: 60, failureRate: 33.2, failedStudents: 105, prerequisites: ["APE II"], semester: 3 },
-  { id: "8", name: "APE IV", code: "APE401", workload: 60, failureRate: 35.9, failedStudents: 98, prerequisites: ["APE III"], semester: 4 },
-  { id: "14", name: "PI II", code: "PI201", workload: 80, failureRate: 31.5, failedStudents: 94, prerequisites: ["PI I"], semester: 2 }
-];
-
-const mockCourses = [
-  { id: "1", name: "Engenharia de Software", studentsWithFailures: 189, totalStudents: 450, failurePercentage: 42.0 },
-  { id: "2", name: "Ciência da Computação", studentsWithFailures: 156, totalStudents: 390, failurePercentage: 40.0 },
-  { id: "3", name: "Sistemas de Informação", studentsWithFailures: 124, totalStudents: 325, failurePercentage: 38.1 },
-  { id: "4", name: "Gestão da Tecnologia da Informação", studentsWithFailures: 95, totalStudents: 280, failurePercentage: 33.9 },
-  { id: "5", name: "Matemática", studentsWithFailures: 78, totalStudents: 245, failurePercentage: 31.8 }
-];
-
-const semesterDistribution = [
-  { semester: "1º", failures: 156, percentage: 12.5 },
-  { semester: "2º", failures: 324, percentage: 26.0 },
-  { semester: "3º", failures: 298, percentage: 23.9 },
-  { semester: "4º", failures: 245, percentage: 19.6 },
-  { semester: "5º", failures: 145, percentage: 11.6 },
-  { semester: "6º", failures: 79, percentage: 6.3 }
-];
-
-const failureEvolution = [
-  { semester: "2023.1", rate: 28.5 },
-  { semester: "2023.2", rate: 31.2 },
-  { semester: "2024.1", rate: 29.8 },
-  { semester: "2024.2", rate: 26.4 },
-  { semester: "2025.1", rate: 24.8 }
-];
-
 export function AdminDashboard() {
   const { isDark } = useTheme();
   
-  const topFailureSubjects = mockSubjects
-    .sort((a, b) => b.failedStudents - a.failedStudents)
-    .slice(0, 10);
+  const [adminData, setAdminData] = useState({
+    kpis: {
+      totalStudentsWithFailures: 0,
+      studentsAtRisk: 0,
+      criticalSubjects: 0
+    },
+    topSubjects: [],
+    topCourses: [],
+    semesterDistribution: [],
+    failureEvolution: []
+  });
 
-  const topCriticalSubjects = mockSubjects
+  useEffect(() => {
+    console.log('AdminDashboard - Carregando dados do banco...');
+    
+    apiService.getAdminStats().then(data => {
+      if (data) {
+        setAdminData(data);
+      }
+    }).catch(error => {
+      console.error('Erro ao carregar dados administrativos:', error);
+    });
+  }, []);
+
+  const topFailureSubjects = adminData.topSubjects.slice(0, 10);
+  const topCriticalSubjects = adminData.topSubjects
     .sort((a, b) => b.failureRate - a.failureRate)
-    .slice(0, 3)
-    .map(subject => ({
-      name: subject.name,
-      failureRate: subject.failureRate
-    }));
-
-  const topCriticalCourses = mockCourses
-    .sort((a, b) => b.failurePercentage - a.failurePercentage)
     .slice(0, 3);
+  const topCriticalCourses = adminData.topCourses.slice(0, 3);
 
   return (
     <div className={`p-6 space-y-6 min-h-screen ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
-          <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Visão geral administrativa</p>
+          <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF - Dashboard Administrativo</h1>
+          <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Visão geral administrativa com dados reais do PostgreSQL</p>
+          <div className={`mt-2 p-3 rounded-lg ${isDark ? 'bg-green-900/20 border border-green-800' : 'bg-green-50 border border-green-200'}`}>
+            <p className={`text-sm ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+              ✅ <strong>Dados Reais:</strong> {adminData.kpis.totalStudentsWithFailures} alunos com reprovações, {adminData.kpis.studentsAtRisk}% em risco, {adminData.kpis.criticalSubjects} disciplinas críticas.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -85,7 +61,7 @@ export function AdminDashboard() {
             <Users className={`h-4 w-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center">
-            <div className="text-5xl font-bold text-blue-400">{mockKPIs.totalStudentsWithFailures.toLocaleString()}</div>
+            <div className="text-5xl font-bold text-blue-400">{adminData.kpis.totalStudentsWithFailures.toLocaleString()}</div>
             <p className={`text-xs mt-2 text-center ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Total de estudantes</p>
           </CardContent>
         </Card>
@@ -118,7 +94,7 @@ export function AdminDashboard() {
             <TrendingUp className={`h-4 w-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center">
-            <div className="text-5xl font-bold text-red-400">{mockKPIs.studentsAtRisk}%</div>
+            <div className="text-5xl font-bold text-red-400">{adminData.kpis.studentsAtRisk}%</div>
             <p className={`text-xs mt-2 text-center ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Risco de atraso na formatura</p>
           </CardContent>
         </Card>
@@ -160,7 +136,7 @@ export function AdminDashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={semesterDistribution}
+                  data={adminData.semesterDistribution}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -169,7 +145,7 @@ export function AdminDashboard() {
                   fill="#8884d8"
                   dataKey="failures"
                 >
-                  {semesterDistribution.map((entry, index) => (
+                  {adminData.semesterDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -185,7 +161,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={failureEvolution}>
+              <LineChart data={adminData.failureEvolution}>
                 <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#475569" : "#e2e8f0"} />
                 <XAxis dataKey="semester" stroke={isDark ? "#94a3b8" : "#64748b"} />
                 <YAxis stroke={isDark ? "#94a3b8" : "#64748b"} />

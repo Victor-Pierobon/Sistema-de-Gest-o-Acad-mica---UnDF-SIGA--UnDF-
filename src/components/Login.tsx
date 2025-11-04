@@ -31,10 +31,10 @@ export function Login() {
   };
 
   const demoCredentials = [
-    { role: 'Aluno', email: 'joao.silva@faculdade.edu.br' },
-    { role: 'Professor', email: 'maria.santos@faculdade.edu.br' },
-    { role: 'Secretaria', email: 'ana.coord@faculdade.edu.br' },
-    { role: 'Administrador', email: 'admin@faculdade.edu.br' }
+    { role: 'Aluno', email: 'aluno' },
+    { role: 'Professor', email: 'professor' },
+    { role: 'Secretaria', email: 'secretaria' },
+    { role: 'Administrador', email: 'admin' }
   ];
 
   return (
@@ -60,15 +60,15 @@ export function Login() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className={isDark ? 'text-slate-300' : 'text-slate-700'}>E-mail institucional</Label>
+                <Label htmlFor="email" className={isDark ? 'text-slate-300' : 'text-slate-700'}>Usuário</Label>
                 <div className="relative">
                   <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
                   <Input
                     id="email"
-                    type="email"
+                    type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="seu.email@faculdade.edu.br"
+                    placeholder="secretaria"
                     className={`pl-10 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-500'}`}
                   />
                 </div>
