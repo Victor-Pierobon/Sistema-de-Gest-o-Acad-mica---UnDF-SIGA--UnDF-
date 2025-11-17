@@ -11,8 +11,7 @@ import {
   Calendar,
   BookOpen,
   UserCheck,
-  Clock,
-  TrendingUp
+  Clock
 } from 'lucide-react';
 
 interface ProfessorDashboardProps {
@@ -211,7 +210,7 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button 
               className="h-16 bg-blue-600 hover:bg-blue-700"
               onClick={() => onPageChange('presencas')}
@@ -241,17 +240,6 @@ export function ProfessorDashboard({ onPageChange }: ProfessorDashboardProps) {
               <div className="flex flex-col items-center">
                 <Users className="h-5 w-5 mb-1" />
                 <span className="text-sm">Gerenciar Turmas</span>
-              </div>
-            </Button>
-
-            <Button 
-              variant="outline"
-              className={`h-16 ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
-              onClick={() => onPageChange('grafo-turmas')}
-            >
-              <div className="flex flex-col items-center">
-                <TrendingUp className="h-5 w-5 mb-1" />
-                <span className="text-sm">Análise de Turmas</span>
               </div>
             </Button>
           </div>

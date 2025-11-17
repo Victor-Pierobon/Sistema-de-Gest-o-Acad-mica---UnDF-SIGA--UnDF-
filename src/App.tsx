@@ -16,6 +16,10 @@ import { Relatorios } from './components/dashboards/Relatorios';
 import { SolicitacaoRecuperacao } from './components/forms/SolicitacaoRecuperacao';
 import { GestaoSolicitacoes } from './components/dashboards/GestaoSolicitacoes';
 import { MetricasConsolidadas } from './components/dashboards/MetricasConsolidadas';
+
+import { RegistroPresencas } from './components/dashboards/RegistroPresencas';
+import { GerenciarTurmas } from './components/dashboards/GerenciarTurmas';
+import { AvaliarSolicitacoes } from './components/dashboards/AvaliarSolicitacoes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Toaster } from './components/ui/sonner';
 import { SkipLink } from './components/ui/skip-link';
@@ -106,7 +110,6 @@ function AppContent() {
         return <Relatorios onBack={() => setCurrentPage('dashboard')} />;
       
       case 'grafo-historico':
-      case 'grafo-turmas':
         return (
           <GrafoVisualizacao
             nodes={mockNodes}
@@ -117,6 +120,12 @@ function AppContent() {
             onNodeClick={(node) => console.log('Nó clicado:', node)}
           />
         );
+      
+      case 'turmas':
+        return <GerenciarTurmas onBack={() => setCurrentPage('dashboard')} />;
+      
+      case 'avaliar-solicitacoes':
+        return <AvaliarSolicitacoes onBack={() => setCurrentPage('dashboard')} />;
       
       case 'minhas-solicitacoes':
         return (
@@ -136,38 +145,7 @@ function AppContent() {
         );
       
       case 'presencas':
-        return (
-          <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
-            <CardHeader>
-              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Registro de Presenças</CardTitle>
-              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-                Registre a presença dos alunos nas suas turmas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                Sistema de registro de presenças em desenvolvimento...
-              </p>
-            </CardContent>
-          </Card>
-        );
-      
-      case 'relatorios':
-        return (
-          <Card className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
-            <CardHeader>
-              <CardTitle className={isDark ? 'text-white' : 'text-slate-900'}>Relatórios</CardTitle>
-              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-                Gere relatórios acadêmicos em PDF
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                Sistema de relatórios em desenvolvimento...
-              </p>
-            </CardContent>
-          </Card>
-        );
+        return <RegistroPresencas onBack={() => setCurrentPage('dashboard')} />;
       
       default:
         return (
