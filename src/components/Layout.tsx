@@ -31,6 +31,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
+import logoUnDF from '../styles/UnDF_logotipo.jpg';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -90,9 +91,11 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
         <Sidebar className={isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"} role="navigation" aria-label="Menu principal de navegação">
           <SidebarHeader className={`p-4 ${isDark ? 'border-b border-slate-700' : 'border-b border-slate-200'}`}>
             <div className="flex items-center space-x-2">
-              <div className="bg-blue-600 p-2 rounded">
-                <GraduationCap className="h-5 w-5 text-white" />
-              </div>
+              <img 
+                src={logoUnDF} 
+                alt="Logo UnDF" 
+                className="h-8 w-auto"
+              />
               <div>
                 <h2 className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h2>
                 <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Sistema Integrado de Gestão Acadêmica</p>

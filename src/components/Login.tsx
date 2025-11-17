@@ -7,6 +7,7 @@ import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Alert, AlertDescription } from './ui/alert';
 import { GraduationCap, Mail, Lock, AlertCircle } from 'lucide-react';
+import logoUnDF from '../styles/UnDF_logotipo.jpg';
 
 export function Login() {
   const { isDark } = useTheme();
@@ -41,9 +42,11 @@ export function Login() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <div className="bg-blue-600 p-3 rounded-full" aria-hidden="true">
-              <GraduationCap className="h-8 w-8 text-white" />
-            </div>
+            <img 
+              src={logoUnDF} 
+              alt="Logo UnDF" 
+              className="h-16 w-auto"
+            />
           </div>
           <h1 className={`text-3xl ${isDark ? 'text-white' : 'text-slate-900'}`}>SIGA-UnDF</h1>
           <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>Sistema Integrado de Gestão Acadêmica</p>
