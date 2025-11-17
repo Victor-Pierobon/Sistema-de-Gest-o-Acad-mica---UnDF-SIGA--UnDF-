@@ -14,8 +14,12 @@ import { GraphAnalysis } from './components/dashboards/GraphAnalysis';
 import { AdvancedGraphVisualization } from './components/AdvancedGraphVisualization';
 import { Relatorios } from './components/dashboards/Relatorios';
 import { SolicitacaoRecuperacao } from './components/forms/SolicitacaoRecuperacao';
+import { GestaoSolicitacoes } from './components/dashboards/GestaoSolicitacoes';
+import { MetricasConsolidadas } from './components/dashboards/MetricasConsolidadas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Toaster } from './components/ui/sonner';
+import { SkipLink } from './components/ui/skip-link';
+import { AccessibilityPanel } from './components/AccessibilityPanel';
 import { GrafoNode, GrafoEdge } from './types';
 
 const mockNodes: GrafoNode[] = [
@@ -48,7 +52,12 @@ function AppContent() {
   }
 
   if (!isAuthenticated) {
-    return <Login />;
+    return (
+      <>
+        <AccessibilityPanel />
+        <Login />
+      </>
+    );
   }
 
   const renderDashboard = () => {
@@ -71,6 +80,12 @@ function AppContent() {
       
       case 'solicitar-recuperacao':
         return <SolicitacaoRecuperacao />;
+      
+      case 'gestao-solicitacoes':
+        return <GestaoSolicitacoes onBack={() => setCurrentPage('dashboard')} />;
+      
+      case 'metricas':
+        return <MetricasConsolidadas onBack={() => setCurrentPage('dashboard')} />;
       
       case 'analise-alunos':
         return <StudentAnalysis />;
@@ -174,9 +189,15 @@ function AppContent() {
   };
 
   return (
-    <Layout currentPage={currentPage} onPageChange={setCurrentPage}>
-      {renderPage()}
-    </Layout>
+    <>
+      <SkipLink />
+      <AccessibilityPanel />
+      <Layout currentPage={currentPage} onPageChange={setCurrentPage}>
+        <div id="main-content">
+          {renderPage()}
+        </div>
+      </Layout>
+    </>
   );
 }
 

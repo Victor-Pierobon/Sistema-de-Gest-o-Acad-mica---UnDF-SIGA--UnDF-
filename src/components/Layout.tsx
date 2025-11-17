@@ -86,8 +86,8 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className={`flex min-h-screen w-full ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
-        <Sidebar className={isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"}>
+      <div className={`flex min-h-screen w-full ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`} role="application" aria-label="SIGA-UnDF - Sistema Integrado de Gestão Acadêmica">
+        <Sidebar className={isDark ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200"} role="navigation" aria-label="Menu principal de navegação">
           <SidebarHeader className={`p-4 ${isDark ? 'border-b border-slate-700' : 'border-b border-slate-200'}`}>
             <div className="flex items-center space-x-2">
               <div className="bg-blue-600 p-2 rounded">
@@ -101,15 +101,18 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
           </SidebarHeader>
 
           <SidebarContent className="py-4">
-            <SidebarMenu>
+            <SidebarMenu role="menubar" aria-label="Opções do menu">
               {menuItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
+                <SidebarMenuItem key={item.id} role="none">
                   <SidebarMenuButton
                     onClick={() => onPageChange(item.id)}
                     isActive={currentPage === item.id}
                     className={isDark ? "text-slate-300 hover:text-white hover:bg-slate-700 data-[active=true]:bg-blue-600 data-[active=true]:text-white" : "text-slate-700 hover:text-slate-900 hover:bg-slate-100 data-[active=true]:bg-blue-600 data-[active=true]:text-white"}
+                    role="menuitem"
+                    aria-current={currentPage === item.id ? 'page' : undefined}
+                    aria-label={`Navegar para ${item.label}`}
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4" aria-hidden="true" />
                     <span>{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -135,8 +138,9 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                 size="sm"
                 onClick={toggleTheme}
                 className={`w-full ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
+                aria-label={`Alternar para ${isDark ? 'tema claro' : 'tema escuro'}`}
               >
-                {isDark ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                {isDark ? <Sun className="h-4 w-4 mr-2" aria-hidden="true" /> : <Moon className="h-4 w-4 mr-2" aria-hidden="true" />}
                 {isDark ? 'Tema Claro' : 'Tema Escuro'}
               </Button>
               <Button
@@ -144,16 +148,17 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                 size="sm"
                 onClick={logout}
                 className={`w-full ${isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white' : 'border-slate-300 text-slate-700 hover:bg-slate-100'}`}
+                aria-label="Sair do sistema"
               >
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
                 Sair
               </Button>
             </div>
           </SidebarFooter>
         </Sidebar>
 
-        <main className="flex-1 flex flex-col">
-          <header className={`p-4 ${isDark ? 'bg-slate-800 border-b border-slate-700' : 'bg-white border-b border-slate-200'}`}>
+        <main className="flex-1 flex flex-col" role="main" aria-label="Conteúdo principal">
+          <header className={`p-4 ${isDark ? 'bg-slate-800 border-b border-slate-700' : 'bg-white border-b border-slate-200'}`} role="banner">
             <div className="flex items-center">
               <SidebarTrigger className={isDark ? "text-slate-300 hover:text-white" : "text-slate-700 hover:text-slate-900"} />
               <div className="ml-4">

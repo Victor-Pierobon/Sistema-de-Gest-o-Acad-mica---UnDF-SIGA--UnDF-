@@ -21,7 +21,7 @@ export interface SolicitacaoRecuperacao {
   documentos: string[];
   status: 'pendente' | 'aprovada_professor' | 'rejeitada_professor' | 'deferida' | 'indeferida';
   parecerProfessor?: string;
-  parecerSecretaria?: string;
+  parecerAdministrativo?: string;
   professorId?: string;
   dataSubmissao: string;
   dataAvaliacao?: string;

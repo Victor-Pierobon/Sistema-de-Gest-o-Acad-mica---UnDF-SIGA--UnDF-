@@ -12,7 +12,6 @@ Sistema completo de gestão acadêmica com frontend React e banco de dados estru
 - **Aluno:** email: `aluno` / senha: `123456`
 - **Professor:** email: `professor` / senha: `123456`
 - **Administrador:** email: `admin` / senha: `123456`
-- **Administrador (antigo secretaria):** email: `secretaria` / senha: `123456`
 
 ## 🚀 Como Iniciar o Sistema Completo
 
@@ -113,12 +112,12 @@ curl http://localhost:3002/api/test
 
 ## 📊 Funcionalidades Implementadas
 
-### Dashboards com Dados Reais
+### Dashboards Implementados
 - **Dashboard Administrativo**: Gestão completa do sistema acadêmico
-  - **Aba Gestão Acadêmica**: Métricas de alunos, solicitações, alertas (dados do PostgreSQL)
-  - **Aba Análises Estatísticas**: Estatísticas de cursos, gráficos, relatórios (dados do PostgreSQL)
-- **Student Dashboard**: Dados simulados (como solicitado)
-- **Professor Dashboard**: Dados simulados (como solicitado)
+  - **Aba Gestão Acadêmica**: Métricas de alunos, solicitações, alertas (dados estáticos)
+  - **Aba Análises Estatísticas**: Estatísticas de cursos, gráficos, relatórios (dados estáticos)
+- **Student Dashboard**: Dados simulados
+- **Professor Dashboard**: Dados simulados
 
 ### API Backend Completa
 - Autenticação de usuários
@@ -204,7 +203,7 @@ psql -h localhost -U siga_user -d siga_undf -f additional_data.sql
 
 ## 📝 Notas Importantes
 
-1. **Dados Reais**: Dashboard Administrativo usa dados do PostgreSQL
+1. **Dados Estáticos**: Dashboard Administrativo usa dados estáticos realistas
 2. **Fallback**: Sistema tem dados de fallback para evitar telas em branco
 3. **Performance**: API otimizada com consultas eficientes
 4. **Escalabilidade**: Suporta milhares de alunos e disciplinas

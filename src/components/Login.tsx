@@ -37,11 +37,11 @@ export function Login() {
   ];
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 ${isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100'}`}>
+    <div className={`min-h-screen flex items-center justify-center p-4 ${isDark ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100'}`} role="main" aria-label="Página de login do SIGA-UnDF">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
-            <div className="bg-blue-600 p-3 rounded-full">
+            <div className="bg-blue-600 p-3 rounded-full" aria-hidden="true">
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -57,7 +57,7 @@ export function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" role="form" aria-label="Formulário de login">
               <div className="space-y-2">
                 <Label htmlFor="email" className={isDark ? 'text-slate-300' : 'text-slate-700'}>Usuário</Label>
                 <div className="relative">
@@ -89,9 +89,9 @@ export function Login() {
               </div>
 
               {error && (
-                <Alert className={isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'}>
-                  <AlertCircle className={`h-4 w-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
-                  <AlertDescription className={isDark ? 'text-red-400' : 'text-red-600'}>
+                <Alert className={isDark ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'} role="alert">
+                  <AlertCircle className={`h-4 w-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} aria-hidden="true" />
+                  <AlertDescription id="login-error" className={isDark ? 'text-red-400' : 'text-red-600'}>
                     {error}
                   </AlertDescription>
                 </Alert>
@@ -101,6 +101,7 @@ export function Login() {
                 type="submit" 
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={loading}
+                aria-describedby={error ? 'login-error' : undefined}
               >
                 {loading ? 'Entrando...' : 'Entrar'}
               </Button>
@@ -126,19 +127,7 @@ export function Login() {
                 </button>
               </div>
             ))}
-            <div className="flex justify-between items-center text-xs">
-              <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Administrador (antigo):</span>
-              <button
-                type="button"
-                onClick={() => setEmail('secretaria')}
-                className={`underline ${isDark ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'}`}
-              >
-                secretaria
-              </button>
-            </div>
-            <p className={`text-xs mt-2 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              ℹ️ Os perfis de Secretaria e Administrador foram unificados
-            </p>
+
           </CardContent>
         </Card>
       </div>
